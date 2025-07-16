@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Primary Meta Tags -->
+    <title>Talk Like a Local: Regional Accents, U.S. Pronunciations, and Travel Tips</title>
+    <meta name="title" content="Talk Like a Local: Learn Pronunciations Across the U.S." />
+    <meta name="description" content="Discover how locals pronounce names, places, and terms across the United States with TalkLikeaLocal.org. Perfect for travelers, language enthusiasts, and locals!" />
+    <meta name="keywords" content="local pronunciations, regional accents, U.S. travel guide, American dialects, Southern slang, Midwest pronunciations, travel language tips, regional language guide, place name pronunciation, learn American English, authentic U.S. accents, pronunciation guide for travelers" />
+    <meta name="author" content="Talk Like a Local" />
+    <meta name="robots" content="index, follow" />
+    <link rel="canonical" href="https://talklikealocal.org" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://talklikealocal.org" />
+    <meta property="og:title" content="Talk Like a Local: Learn Pronunciations Across the U.S." />
+    <meta property="og:description" content="Say it like a local! Explore pronunciations of names, places, and terms across the United States." />
+    <meta property="og:image" content="https://talklikealocal.org/og-image.png" />
+    <meta property="og:image:alt" content="Talk Like a Local - Learn local pronunciations across the United States" />
+    <meta property="og:site_name" content="TalkLikeaLocal.org" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://talklikealocal.org" />
+    <meta name="twitter:title" content="Talk Like a Local: Learn Pronunciations Across the U.S." />
+    <meta name="twitter:description" content="Say it like a local! Explore pronunciations of names, places, and terms across the United States." />
+    <meta name="twitter:image" content="https://talklikealocal.org/og-image.png" />
+    <meta name="twitter:image:alt" content="Talk Like a Local - Learn local pronunciations across the United States" />
+
+    <!-- Dynamic meta tags for sections -->
+    <script type="application/javascript">
+      // Update meta tags based on URL hash
+      function updateMetaTags() {
+        const hash = window.location.hash;
+        if (hash === '#our-impact') {
+          document.querySelector('meta[property="og:title"]').content = 'Our Impact - Talk Like a Local';
+          document.querySelector('meta[property="og:description"]').content = 'Discover how we\'re preserving linguistic diversity across the United States. Join us in documenting local and cultural pronunciations!';
+          document.querySelector('meta[name="twitter:title"]').content = 'Our Impact - Talk Like a Local';
+          document.querySelector('meta[name="twitter:description"]').content = 'Discover how we\'re preserving linguistic diversity across the United States. Join us in documenting local and cultural pronunciations!';
+        }
+      }
+      window.addEventListener('hashchange', updateMetaTags);
+      updateMetaTags();
+    </script>
+
+    <!-- ✅ Google AdSense script -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7469694080179788"
+      crossorigin="anonymous">
+    </script>
+
+    <!-- Rest of the head content remains the same -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
