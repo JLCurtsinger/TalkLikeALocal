@@ -7,8 +7,14 @@ export const massachusetts: State = {
     {
       word: 'Gloucester',
       phonetic: 'GLOSS-tuh',
-      audioUrl: '/audio/gloucester.mp3',
+      // audioUrl: '/audio/gloucester.mp3',
       description: 'Historic fishing city on Cape Ann'
+    },
+    {
+      word: 'Haverhill',
+      phonetic: 'Hay-vrill',
+      // audioUrl: '/audio/gloucester.mp3',
+      description: 'A city in Essex County'
     },
     {
       word: 'Leicester',
