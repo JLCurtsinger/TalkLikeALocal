@@ -117,6 +117,11 @@ export const louisiana: State = {
       description: 'A sweet candy made from sugar, nuts, and cream, often associated with New Orleans.'
     },
     {
+      word: "Saint Amant",
+      phonetic: "San-A-Mah",
+      description: "An unincorporated community in Ascension Paris",
+    },
+    {
       word: "Second Line",
       phonetic: "SEK-uhnd LYN",
       description: "A traditional parade or procession, often with brass bands, rooted in African-American culture.",
