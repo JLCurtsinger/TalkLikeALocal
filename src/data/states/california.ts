@@ -142,6 +142,12 @@ export const california: State = {
       description: 'A city in Kern County, pronounced "tuh-HATCH-uh-pee," not "tee-hah-CHA-pee."'
     },
     {
+      word: 'Tujunga',
+      phonetic: 'Tuh-hunga',
+      // audioUrl: '/audio/sepulveda.mp3',
+      description: 'A Los Angeles city neighborhood within the Crescenta Valley and Verdugo Mountains.'
+    },
+    {
       word: 'Tuolumne',
       phonetic: 'too-AW-luh-mee',
       // audioUrl: '/audio/sepulveda.mp3',
