@@ -180,7 +180,7 @@ export const michigan: State = {
     },
     {
       word: 'Sault Ste. Marie',
-      phonetic: 'soo saint marie',
+      phonetic: 'sue saint marie',
       // audioUrl: '/audio/sault_ste_marie.mp3',
       description: 'A city in the Upper Peninsula.'
     },
