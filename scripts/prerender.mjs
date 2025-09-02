@@ -52,7 +52,10 @@ async function main() {
     if (!(await fileExists(routesPath))) throw new Error('Missing scripts/prerender.routes.json');
     const routes = JSON.parse(await fs.readFile(routesPath, 'utf-8'));
 
-    const browser = await puppeteer.launch({ headless: 'new' });
+    const browser = await puppeteer.launch({
+      headless: 'new',
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
     const page = await browser.newPage();
 
     for (const route of routes) {
