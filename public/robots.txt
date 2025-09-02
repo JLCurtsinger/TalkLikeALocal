@@ -1,5 +1,4 @@
 User-agent: *
 Allow: /
 
-# Sitemaps
-Sitemap: https://talklikealocal.org/sitemap.xml
+Sitemap: https://YOUR_DOMAIN_HERE/sitemap.xml
