@@ -59,6 +59,12 @@ export const newMexico: State = {
       description: 'A pueblo and census-designated place, with a Tewa name meaning "water drinking place."'
     },
     {
+      word: 'Taos',
+      phonetic: 'Towce (like house with a T)' ,
+      // audioUrl: '/audio/tesuque.mp3',
+      description: 'A town in northern New Mexico’s high desert, bounded by the Sangre de Cristo Mountains'
+    },
+    {
       word: 'Tesuque',
       phonetic: 'Teh-sue-keh',
       // audioUrl: '/audio/tesuque.mp3',
