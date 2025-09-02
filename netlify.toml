@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "npm run seo:build"
   publish = "dist"
 
 [[redirects]]
