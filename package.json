@@ -8,8 +8,9 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "seo:build": "node scripts/prerender.mjs && node scripts/generate-sitemap.mjs",
-    "seo:preview": "vite preview --port 4173 --strictPort"
+    "seo:build": "node scripts/discover-routes.mjs && node scripts/prerender.mjs && node scripts/generate-sitemap.mjs",
+    "seo:preview": "vite preview --port 4173 --strictPort",
+    "seo:routes": "node -e \"console.log(require('fs').readFileSync('scripts/prerender.routes.json','utf8'))\""
   },
   "dependencies": {
     "@tsparticles/engine": "^3.3.0",

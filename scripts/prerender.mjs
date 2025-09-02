@@ -59,6 +59,10 @@ async function main() {
       try {
         const url = `${baseUrl}${route}`;
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
+        // Best-effort wait for main content; do not fail the build if missing.
+        try {
+          await page.waitForSelector('main, #root, #app', { timeout: 10000 });
+        } catch {}
         const html = await page.content();
 
         const outPath = routeToOutPath(route);
