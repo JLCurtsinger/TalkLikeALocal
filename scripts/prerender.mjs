@@ -40,6 +40,26 @@ function routeToOutPath(route) {
   return path.join(distDir, clean, 'index.html');
 }
 
+async function killProcess(proc) {
+  return new Promise((resolve) => {
+    if (!proc || proc.killed) {
+      resolve();
+      return;
+    }
+    
+    proc.on('exit', () => resolve());
+    proc.kill('SIGTERM');
+    
+    // Force kill after 5 seconds if it doesn't exit gracefully
+    setTimeout(() => {
+      if (!proc.killed) {
+        proc.kill('SIGKILL');
+        resolve();
+      }
+    }, 5000);
+  });
+}
+
 async function main() {
   await run('npm', ['run', 'build']);
 
@@ -62,10 +82,29 @@ async function main() {
       try {
         const url = `${baseUrl}${route}`;
         await page.goto(url, { waitUntil: 'networkidle0', timeout: 60000 });
-        // Best-effort wait for main content; do not fail the build if missing.
-        try {
-          await page.waitForSelector('main, #root, #app', { timeout: 10000 });
-        } catch {}
+
+        // Wait for Helmet-managed tags to show up in <head>
+        // react-helmet-async adds data-rh="true" to managed tags
+        await page.waitForSelector('head [data-rh="true"]', { timeout: 30000 }).catch(() => {});
+
+        // Also wait until canonical matches the current route (best signal that GlobalSEO ran)
+        const expectedCanonical = route === '/' 
+          ? 'https://talklikealocal.org/' 
+          : `https://talklikealocal.org${route.replace(/\/$/, '')}`;
+
+        await page.waitForFunction(
+          (href) => {
+            const el = document.querySelector('head link[rel="canonical"]');
+            return el && el.getAttribute('href') === href;
+          },
+          { timeout: 30000 },
+          expectedCanonical
+        ).catch(() => {});
+
+        // Tiny grace period to let any queued Helmet updates flush
+        await new Promise(resolve => setTimeout(resolve, 200));
+
+        // now serialize the final HTML
         const html = await page.content();
 
         const outPath = routeToOutPath(route);
@@ -79,11 +118,14 @@ async function main() {
 
     await browser.close();
   } finally {
-    if (previewProc && !previewProc.killed) previewProc.kill('SIGTERM');
+    await killProcess(previewProc);
   }
 }
 
-main().catch(err => {
+main().then(() => {
+  console.log('[prerender] completed successfully');
+  process.exit(0);
+}).catch(err => {
   console.error(err);
   process.exit(1);
 });

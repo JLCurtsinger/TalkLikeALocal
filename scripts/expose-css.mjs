@@ -31,3 +31,5 @@ if (!hrefs.length) {
 }
 await concatCss(hrefs, resolve(distDir, 'styles.css'));
 console.log(`[expose-css] Wrote dist/styles.css from: ${hrefs.join(', ')}`);
+console.log('[expose-css] completed successfully');
+process.exit(0);

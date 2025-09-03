@@ -7,12 +7,12 @@
     "dev": "vite",
     "build": "vite build && node scripts/expose-css.mjs && npm run build:blog && npm run postbuild:merge-blog && node scripts/verify-blog-css.mjs",
     "build:blog": "npm --prefix ./blog ci --no-audit --no-fund && npm --prefix ./blog run build",
-    "postbuild:merge-blog": "mkdir -p dist/blog && cp -R blog/dist/* dist/blog && cp blog/public/blog.css dist/blog/ || true",
+    "postbuild:merge-blog": "mkdir -p dist/blog && cp -R blog/dist/* dist/blog && cp blog/public/blog.css dist/blog/ || true && echo '[postbuild:merge-blog] completed successfully'",
     "lint": "eslint .",
     "preview": "vite preview",
     "seo:build": "node scripts/discover-routes.mjs && node scripts/prerender.mjs && node scripts/generate-sitemap.mjs",
     "seo:preview": "vite preview --port 4173 --strictPort",
-    "seo:routes": "node -e \"console.log(require('fs').readFileSync('scripts/prerender.routes.json','utf8'))\""
+    "seo:routes": "node -e \"import('fs').then(fs => { console.log(fs.readFileSync('scripts/prerender.routes.json','utf8')); process.exit(0); })\""
   },
   "dependencies": {
     "@tsparticles/engine": "^3.3.0",

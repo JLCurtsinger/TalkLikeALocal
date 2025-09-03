@@ -76,7 +76,10 @@ async function main() {
   console.log(`[routes] wrote ${OUT} with ${all.length} routes`);
 }
 
-main().catch(err => {
+main().then(() => {
+  console.log('[discover-routes] completed successfully');
+  process.exit(0);
+}).catch(err => {
   console.error(err);
   process.exit(1);
 });

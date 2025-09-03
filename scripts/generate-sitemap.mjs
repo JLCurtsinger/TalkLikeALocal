@@ -37,3 +37,5 @@ ${urls}
 await fs.mkdir(distDir, { recursive: true });
 await fs.writeFile(path.resolve(distDir, 'sitemap.xml'), xml, 'utf-8');
 console.log('[sitemap] wrote dist/sitemap.xml');
+console.log('[sitemap] completed successfully');
+process.exit(0);
