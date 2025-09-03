@@ -1,0 +1,115 @@
+---
+// Nav.astro - Recreates the main site's navigation bar for the blog
+---
+
+<nav class="fixed top-0 left-0 right-0 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm shadow-sm z-50 transition-colors">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6">
+    <div class="flex items-center justify-between h-16">
+      <a 
+        href="/"
+        class="flex items-center space-x-2 text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+      >
+        <svg class="w-6 h-6 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+        </svg>
+        <span>TalkLikeALocal</span>
+      </a>
+      
+      <div class="flex items-center space-x-4">
+        <!-- Theme Toggle -->
+        <button
+          id="theme-toggle"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Switch to dark mode"
+        >
+          <svg id="theme-icon" class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+        
+        <!-- Make a Suggestion button - visible on larger screens -->
+        <button
+          id="suggestion-button"
+          class="hidden md:inline-flex items-center px-3 py-1.5 text-sm text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-sm hover:opacity-90 transition-opacity"
+        >
+          Make a Suggestion
+        </button>
+
+        <!-- Hamburger menu button -->
+        <button
+          id="menu-toggle"
+          class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          aria-label="Menu"
+        >
+          <svg id="menu-icon" class="w-6 h-6 text-gray-600 dark:text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile menu - positioned below the navbar -->
+  <div
+    id="mobile-menu"
+    class="fixed right-0 top-16 w-64 bg-white dark:bg-gray-900 shadow-lg rounded-bl-lg transition-transform duration-200 z-40 translate-x-full"
+  >
+    <div class="p-4 space-y-4">
+      <!-- Navigation links -->
+      <a
+        href="/"
+        class="block px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        Local Terms
+      </a>
+      <a
+        href="/cultural-terms"
+        class="block px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        Cultural Terms
+      </a>
+
+      <!-- Mobile-only suggestion button -->
+      <button
+        id="mobile-suggestion-button"
+        class="md:hidden w-full text-left px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        Make a Suggestion
+      </button>
+
+      <button
+        id="dispute-button"
+        class="w-full text-left px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        Dispute a Term
+      </button>
+
+      <a
+        href="/about"
+        class="block px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        About Us
+      </a>
+
+      <a
+        href="/blog"
+        class="block px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        <div class="flex items-center space-x-2">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
+          </svg>
+          <span>Blog</span>
+        </div>
+      </a>
+
+      <a
+        href="/impact"
+        class="block px-4 py-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+      >
+        Our Impact
+      </a>
+    </div>
+  </div>
+</nav>

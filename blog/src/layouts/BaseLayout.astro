@@ -1,4 +1,6 @@
 ---
+import Nav from '../components/Nav.astro';
+
 const title = "Talk Like a Local — Blog";
 const description = "Pronunciations, culture, and preservation resources.";
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
@@ -19,8 +21,10 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <link rel="stylesheet" href="/blog/blog.css" />
   </head>
   <body>
+    <Nav />
     <main class="container">
       <slot />
     </main>
+    <script src="/blog/nav.js" type="module" defer></script>
   </body>
 </html>
