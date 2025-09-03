@@ -1,0 +1,23 @@
+:root { color-scheme: light dark; }
+html, body { margin: 0; }
+body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji"; line-height: 1.6; }
+.container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
+.page-header { margin: 0 0 1.25rem; }
+.page-header .meta { opacity: .7; font-size: .9rem; margin-top: .25rem; }
+.content { font-size: 1.05rem; }
+.content h1 { font-size: 2rem; line-height: 1.2; margin: 1.25rem 0 .75rem; }
+.content h2 { font-size: 1.5rem; margin: 1rem 0 .5rem; }
+.content h3 { font-size: 1.25rem; margin: .85rem 0 .4rem; }
+.content p { margin: .7rem 0; }
+.content ul, .content ol { padding-left: 1.25rem; margin: .5rem 0 .75rem; }
+.content li { margin: .35rem 0; }
+.content a { text-decoration: none; color: var(--tlal-link, #5b6cff); }
+.content a:hover { text-decoration: underline; }
+.content blockquote { margin: .9rem 0; padding: .6rem 1rem; border-left: 3px solid rgba(0,0,0,.15); background: rgba(0,0,0,.03); border-radius: 8px; }
+.content img { max-width: 100%; height: auto; border-radius: 12px; }
+.content hr { border: 0; height: 1px; background: rgba(0,0,0,.08); margin: 1.5rem 0; }
+@media (prefers-color-scheme: dark) {
+  .content a { color: var(--tlal-link-dark, #9aa6ff); }
+  .content blockquote { border-left-color: rgba(255,255,255,.2); background: rgba(255,255,255,.04); }
+  .page-header .meta { color: rgba(255,255,255,.7); }
+}
