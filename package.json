@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && npm run build:blog && npm run postbuild:merge-blog",
+    "build": "vite build",
     "build:blog": "npm --prefix ./blog ci --no-audit --no-fund && npm --prefix ./blog run build",
     "postbuild:merge-blog": "mkdir -p dist/blog && cp -R blog/dist/* dist/blog || true",
     "lint": "eslint .",
