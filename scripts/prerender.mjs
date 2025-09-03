@@ -61,7 +61,14 @@ async function killProcess(proc) {
 }
 
 async function main() {
-  await run('npm', ['run', 'build']);
+  const SKIP_REBUILD = process.env.SKIP_REBUILD === '1' || process.env.NETLIFY === 'true';
+  
+  if (!SKIP_REBUILD) {
+    // Only rebuild locally for dev, skip on Netlify
+    await run('npm', ['run', 'build']);
+  } else {
+    console.log('[prerender] Skipping rebuild - assuming dist/ already exists');
+  }
 
   const previewProc = spawn('npx', ['vite', 'preview', '--port', previewPort, '--strictPort'], { stdio: 'inherit' });
 

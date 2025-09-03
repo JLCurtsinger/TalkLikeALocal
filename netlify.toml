@@ -1,7 +1,18 @@
 [build]
-# Install Chrome for prerender, install root deps, then run the root build and prerender.
-# Root "build" already builds Vite, exposes /styles.css, builds the blog, and merges it.
-command = "npx puppeteer browsers install chrome && npm ci && npm run build && npm run seo:build"
+# 1) Install Chrome once (cached), 2) root deps, 3) root build, 4) conditional blog build, 5) SEO prerender
+command = """
+npx puppeteer browsers install chrome && \
+npm ci && \
+npm run build && \
+if git diff --quiet HEAD^ HEAD -- blog; then \
+  echo 'Blog unchanged: skipping blog install/build.'; \
+else \
+  npm --prefix ./blog ci --no-audit --no-fund --prefer-offline && \
+  npm --prefix ./blog run build && \
+  mkdir -p dist/blog && cp -R blog/dist/* dist/blog; \
+fi && \
+SKIP_REBUILD=1 npm run seo:build
+"""
 publish = "dist"
 
 [build.environment]
