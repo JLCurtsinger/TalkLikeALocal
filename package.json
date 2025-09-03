@@ -5,7 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && npm run build:blog && npm run postbuild:merge-blog",
+    "build:blog": "npm --prefix ./blog run build",
+    "postbuild:merge-blog": "mkdir -p dist/blog && cp -R blog/dist/* dist/blog || true",
     "lint": "eslint .",
     "preview": "vite preview",
     "seo:build": "node scripts/discover-routes.mjs && node scripts/prerender.mjs && node scripts/generate-sitemap.mjs",

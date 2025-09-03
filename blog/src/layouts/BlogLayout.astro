@@ -1,0 +1,65 @@
+---
+export interface Props {
+  title: string;
+  description?: string;
+  pubDate?: string | Date;
+  hero?: string;
+  canonical?: string;
+  tags?: string[];
+}
+const { title, description, pubDate, hero, canonical } = Astro.props;
+const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+---
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>{title} | Talk Like a Local</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    {description && <meta name="description" content={description} />}
+    <link rel="canonical" href={pageUrl} />
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    {hero && <meta property="og:image" content={hero} />}
+    <meta name="twitter:card" content="summary_large_image" />
+    <script type="application/ld+json">
+      {JSON.stringify({
+        "@context":"https://schema.org",
+        "@type":"BlogPosting",
+        headline: title,
+        description,
+        datePublished: pubDate,
+        image: hero ? [hero] : undefined,
+        mainEntityOfPage: pageUrl,
+        publisher: { "@type": "Organization", name: "Talk Like a Local" }
+      })}
+    </script>
+    <style>
+      :root { color-scheme: light dark; }
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji"; margin: 0; }
+      .container { max-width: 820px; margin: 0 auto; padding: 2rem; line-height: 1.6; }
+      header, footer { margin: 2rem 0; }
+      h1 { font-size: 2rem; line-height: 1.2; margin-bottom: .5rem; }
+      img { max-width: 100%; height: auto; border-radius: 12px; }
+      .meta { color: #666; font-size: .95rem; margin-bottom: 1.5rem; }
+      a { text-decoration: none; }
+    </style>
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <a href="/blog" aria-label="Back to blog">← Back to Blog</a>
+        <h1>{title}</h1>
+        {pubDate && <p class="meta">Published: {new Date(pubDate).toDateString()}</p>}
+      </header>
+      <article>
+        <slot />
+      </article>
+      <footer>
+        <hr />
+        <p><a href="/blog">More posts</a> · <a href="/">Home</a></p>
+      </footer>
+    </main>
+  </body>
+</html>
