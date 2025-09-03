@@ -1,5 +1,5 @@
 [build]
-  command = "npx puppeteer browsers install chrome && npm run seo:build"
+  command = "npx puppeteer browsers install chrome && npm --prefix ./blog ci --no-audit --no-fund && npm run seo:build"
   publish = "dist"
 
 [[redirects]]
