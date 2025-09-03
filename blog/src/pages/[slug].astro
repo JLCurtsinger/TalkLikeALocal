@@ -5,14 +5,15 @@ import BlogLayout from '../layouts/BlogLayout.astro';
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
   return posts.map((post) => ({
-    params: { slug: post.slug.split('/') },
-    props: post
+    params: { slug: post.slug }, // slug must be a string
+    props: { post }
   }));
 }
 
-const { data, body } = Astro.props;
-const { title, description, pubDate, hero, canonical, tags } = data;
+const { post } = Astro.props;
+const { Content } = await post.render();
+const { title, description, pubDate, hero, canonical, tags } = post.data;
 ---
 <BlogLayout {title} {description} {pubDate} {hero} {canonical} {tags}>
-  <Fragment set:html={await body()} />
+  <Content />
 </BlogLayout>
