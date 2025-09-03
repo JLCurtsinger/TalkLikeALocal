@@ -11,7 +11,7 @@ const { title, description, pubDate, hero, canonical } = Astro.props;
 const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
 ---
 <!doctype html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="utf-8" />
     <title>{title} | Talk Like a Local</title>
@@ -42,15 +42,15 @@ const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
   </head>
   <body>
     <main class="container">
-      <header>
+      <header class="page-header">
         <a href="/blog" aria-label="Back to blog">← Back to Blog</a>
         <h1>{title}</h1>
         {pubDate && <p class="meta">Published: {new Date(pubDate).toDateString()}</p>}
       </header>
-      <article>
+      <article class="prose content">
         <slot />
       </article>
-      <footer>
+      <footer class="page-footer">
         <hr />
         <p><a href="/blog">More posts</a> · <a href="/">Home</a></p>
       </footer>
