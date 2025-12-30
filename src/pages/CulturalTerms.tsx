@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
 import { MapPin, ChevronDown, ChevronRight, Globe } from 'lucide-react';
@@ -14,6 +14,7 @@ import { Helmet } from 'react-helmet-async';
 import { SparklesCore } from '../components/ui/sparkles';
 import { useTheme } from '../contexts/ThemeContext';
 import { scrollToHash } from '../utils/hashScroll';
+import { buildCultureTermIndex } from '../utils/buildTermIndex';
 
 export default function CulturalTerms() {
   const location = useLocation();
@@ -21,6 +22,16 @@ export default function CulturalTerms() {
   const [searchTerm, setSearchTerm] = useState('');
   const { theme } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
+
+  // Build term index once on mount - O(n) operation
+  const termIndex = useMemo(() => buildCultureTermIndex(cultures), []);
+
+  // Disable browser scroll restoration when hash is present
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -33,6 +44,8 @@ export default function CulturalTerms() {
   }, []);
 
   useEffect(() => {
+    // Hash navigation must override any saved letter/scroll state
+    // If hash exists, handle it first and skip other scroll logic
     if (location.hash) {
       const hash = location.hash.slice(1);
       
@@ -40,45 +53,52 @@ export default function CulturalTerms() {
       if (hash.startsWith('term-')) {
         const termId = hash;
         
-        // Find which culture contains this term by searching through cultures data
-        // Extract the word from the term ID (remove "term-" prefix)
-        const wordSlug = termId.replace(/^term-/, '');
-        let cultureName: string | undefined;
+        // O(1) lookup in term index
+        const termLocation = termIndex.get(termId);
         
-        for (const culture of cultures) {
-          const hasTerm = culture.terms.some((term: any) => {
-            const termSlug = generateTermId(term.word);
-            return termSlug === wordSlug;
+        if (termLocation) {
+          // Expand the culture FIRST, then scroll (expansion triggers re-render)
+          setExpandedCultures(prev => new Set([...prev, termLocation.cultureName]));
+          
+          // Wait for expansion to complete before scrolling
+          // Use requestAnimationFrame to ensure DOM has updated
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              // Use reliable hash scrolling with retry logic
+              scrollToHash({
+                hash: termId,
+                onElementFound: (element) => {
+                  // Dev-only check: verify ID match
+                  if (process.env.NODE_ENV === 'development') {
+                    const expectedId = termId;
+                    const actualId = element.id;
+                    if (expectedId !== actualId) {
+                      console.warn(`[Hash Scroll] ID mismatch! Expected: ${expectedId}, Actual: ${actualId}`);
+                    } else {
+                      console.log(`[Hash Scroll] Successfully found element with ID: ${actualId}`);
+                    }
+                  }
+                  
+                  // Apply highlight class
+                  element.classList.add('highlighted-term');
+                  // Remove highlight after 2 seconds
+                  setTimeout(() => {
+                    element.classList.remove('highlighted-term');
+                  }, 2000);
+                },
+              });
+            });
           });
-          if (hasTerm) {
-            cultureName = culture.name;
-            break;
-          }
         }
-        
-        // Expand the culture if found
-        if (cultureName) {
-          setExpandedCultures(prev => new Set([...prev, cultureName!]));
-        }
-        
-        // Use reliable hash scrolling with retry logic
-        scrollToHash({
-          hash: termId,
-          onElementFound: (element) => {
-            // Apply highlight class
-            element.classList.add('highlighted-term');
-            // Remove highlight after 2 seconds
-            setTimeout(() => {
-              element.classList.remove('highlighted-term');
-            }, 2000);
-          },
-        });
+        // If term not found, fail gracefully (do nothing)
       } else {
         // Handle non-term hashes
         scrollToHash({ hash });
       }
+      // Early return - hash navigation takes precedence
+      return;
     }
-  }, [location]);
+  }, [location, termIndex]);
 
   // Handle hashchange events (when hash changes without page navigation)
   useEffect(() => {
@@ -88,33 +108,30 @@ export default function CulturalTerms() {
         
         if (hash.startsWith('term-')) {
           const termId = hash;
-          const wordSlug = termId.replace(/^term-/, '');
-          let cultureName: string | undefined;
           
-          for (const culture of cultures) {
-            const hasTerm = culture.terms.some((term: any) => {
-              const termSlug = generateTermId(term.word);
-              return termSlug === wordSlug;
+          // O(1) lookup in term index
+          const termLocation = termIndex.get(termId);
+          
+          if (termLocation) {
+            // Expand FIRST, then scroll
+            setExpandedCultures(prev => new Set([...prev, termLocation.cultureName]));
+            
+            // Wait for expansion to complete
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                scrollToHash({
+                  hash: termId,
+                  onElementFound: (element) => {
+                    element.classList.add('highlighted-term');
+                    setTimeout(() => {
+                      element.classList.remove('highlighted-term');
+                    }, 2000);
+                  },
+                });
+              });
             });
-            if (hasTerm) {
-              cultureName = culture.name;
-              break;
-            }
           }
-          
-          if (cultureName) {
-            setExpandedCultures(prev => new Set([...prev, cultureName!]));
-          }
-          
-          scrollToHash({
-            hash: termId,
-            onElementFound: (element) => {
-              element.classList.add('highlighted-term');
-              setTimeout(() => {
-                element.classList.remove('highlighted-term');
-              }, 2000);
-            },
-          });
+          // If term not found, fail gracefully (do nothing)
         } else {
           scrollToHash({ hash });
         }
@@ -123,7 +140,7 @@ export default function CulturalTerms() {
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [termIndex]);
 
   const toggleCulture = (cultureName: string) => {
     setExpandedCultures(prev => {

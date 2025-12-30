@@ -40,6 +40,9 @@ export function scrollToHash({
     return;
   }
 
+  // Element not found - reset scroll to top before retries to prevent staying at restored position
+  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+
   // Element not found - use MutationObserver + interval retry
   let retryCount = 0;
   let found = false;

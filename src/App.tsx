@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { StateSection } from './components/StateSection';
 import { BackToTop } from './components/BackToTop';
@@ -14,6 +14,7 @@ import { Helmet } from 'react-helmet-async';
 import { SparklesCore } from './components/ui/sparkles';
 import { useTheme } from './contexts/ThemeContext';
 import { scrollToHash } from './utils/hashScroll';
+import { buildStateTermIndex } from './utils/buildTermIndex';
 
 export default function App() {
   const location = useLocation();
@@ -23,6 +24,16 @@ export default function App() {
   const { theme } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
   const [isAboveFold, setIsAboveFold] = useState(true);
+
+  // Build term index once on mount - O(n) operation
+  const termIndex = useMemo(() => buildStateTermIndex(states), []);
+
+  // Disable browser scroll restoration when hash is present
+  useEffect(() => {
+    if ('scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+  }, []);
 
   useEffect(() => {
     const checkMobile = () => {
@@ -45,6 +56,83 @@ export default function App() {
   }, []);
 
   useEffect(() => {
+    // Hash navigation must override any saved letter/scroll state
+    // If hash exists, handle it first and skip other scroll logic
+    if (location.hash) {
+      const hash = location.hash.slice(1);
+      
+      // Check if hash is a term ID (starts with "term-")
+      if (hash.startsWith('term-')) {
+        const termId = hash;
+        
+        // O(1) lookup in term index
+        const termLocation = termIndex.get(termId);
+        
+        if (termLocation) {
+          // Expand the state FIRST, then scroll (expansion triggers re-render)
+          setExpandedStates(prev => new Set([...prev, termLocation.stateName]));
+          
+          // Wait for expansion to complete before scrolling
+          // Use requestAnimationFrame to ensure DOM has updated
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              // Use reliable hash scrolling with retry logic
+              scrollToHash({
+                hash: termId,
+                onElementFound: (element) => {
+                  // Dev-only check: verify ID match
+                  if (process.env.NODE_ENV === 'development') {
+                    const expectedId = termId;
+                    const actualId = element.id;
+                    if (expectedId !== actualId) {
+                      console.warn(`[Hash Scroll] ID mismatch! Expected: ${expectedId}, Actual: ${actualId}`);
+                    } else {
+                      console.log(`[Hash Scroll] Successfully found element with ID: ${actualId}`);
+                    }
+                  }
+                  
+                  // Apply highlight class
+                  element.classList.add('highlighted-term');
+                  // Remove highlight after 2 seconds
+                  setTimeout(() => {
+                    element.classList.remove('highlighted-term');
+                  }, 2000);
+                },
+              });
+            });
+          });
+        }
+        // If term not found, fail gracefully (do nothing)
+      } else {
+        // Handle non-term hashes (like state sections)
+        const element = document.getElementById(hash);
+        if (element) {
+          const stateSection = element.closest('section');
+          if (stateSection) {
+            const stateName = states.find(state => 
+              generateTermId(state.name) === stateSection.id
+            )?.name;
+            if (stateName) {
+              setExpandedStates(prev => new Set([...prev, stateName]));
+              // Wait for expansion before scrolling
+              requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                  scrollToHash({ hash });
+                });
+              });
+            } else {
+              scrollToHash({ hash });
+            }
+          } else {
+            scrollToHash({ hash });
+          }
+        }
+      }
+      // Early return - hash navigation takes precedence
+      return;
+    }
+
+    // Only run other scroll logic if no hash is present
     if (location.state?.scrollToSuggestions) {
       setTimeout(() => {
         const suggestionsSection = document.getElementById('suggestions');
@@ -60,64 +148,8 @@ export default function App() {
           });
         }
       }, 100);
-    } else if (location.hash) {
-      const hash = location.hash.slice(1);
-      
-      // Check if hash is a term ID (starts with "term-")
-      if (hash.startsWith('term-')) {
-        const termId = hash;
-        
-        // Find which state contains this term by searching through states data
-        // Extract the word from the term ID (remove "term-" prefix)
-        const wordSlug = termId.replace(/^term-/, '');
-        let stateName: string | undefined;
-        
-        for (const state of states) {
-          const hasTerm = state.terms.some(term => {
-            const termSlug = generateTermId(term.word);
-            return termSlug === wordSlug;
-          });
-          if (hasTerm) {
-            stateName = state.name;
-            break;
-          }
-        }
-        
-        // Expand the state if found
-        if (stateName) {
-          setExpandedStates(prev => new Set([...prev, stateName!]));
-        }
-        
-        // Use reliable hash scrolling with retry logic
-        scrollToHash({
-          hash: termId,
-          onElementFound: (element) => {
-            // Apply highlight class
-            element.classList.add('highlighted-term');
-            // Remove highlight after 2 seconds
-            setTimeout(() => {
-              element.classList.remove('highlighted-term');
-            }, 2000);
-          },
-        });
-      } else {
-        // Handle non-term hashes (like state sections)
-        const element = document.getElementById(hash);
-        if (element) {
-          const stateSection = element.closest('section');
-          if (stateSection) {
-            const stateName = states.find(state => 
-              generateTermId(state.name) === stateSection.id
-            )?.name;
-            if (stateName) {
-              setExpandedStates(prev => new Set([...prev, stateName]));
-            }
-          }
-          scrollToHash({ hash });
-        }
-      }
     }
-  }, [location]);
+  }, [location, termIndex]);
 
   // Handle hashchange events (when hash changes without page navigation)
   useEffect(() => {
@@ -127,33 +159,30 @@ export default function App() {
         
         if (hash.startsWith('term-')) {
           const termId = hash;
-          const wordSlug = termId.replace(/^term-/, '');
-          let stateName: string | undefined;
           
-          for (const state of states) {
-            const hasTerm = state.terms.some(term => {
-              const termSlug = generateTermId(term.word);
-              return termSlug === wordSlug;
+          // O(1) lookup in term index
+          const termLocation = termIndex.get(termId);
+          
+          if (termLocation) {
+            // Expand FIRST, then scroll
+            setExpandedStates(prev => new Set([...prev, termLocation.stateName]));
+            
+            // Wait for expansion to complete
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                scrollToHash({
+                  hash: termId,
+                  onElementFound: (element) => {
+                    element.classList.add('highlighted-term');
+                    setTimeout(() => {
+                      element.classList.remove('highlighted-term');
+                    }, 2000);
+                  },
+                });
+              });
             });
-            if (hasTerm) {
-              stateName = state.name;
-              break;
-            }
           }
-          
-          if (stateName) {
-            setExpandedStates(prev => new Set([...prev, stateName!]));
-          }
-          
-          scrollToHash({
-            hash: termId,
-            onElementFound: (element) => {
-              element.classList.add('highlighted-term');
-              setTimeout(() => {
-                element.classList.remove('highlighted-term');
-              }, 2000);
-            },
-          });
+          // If term not found, fail gracefully (do nothing)
         } else {
           scrollToHash({ hash });
         }
@@ -162,7 +191,7 @@ export default function App() {
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, []);
+  }, [termIndex]);
 
   useEffect(() => {
     // Google Analytics
