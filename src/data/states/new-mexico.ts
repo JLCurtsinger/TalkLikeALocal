@@ -11,6 +11,11 @@ export const newMexico: State = {
       description: 'A small town known for its rich history and as the home of artist Georgia O\'Keeffe. Often mispronounced due to its unique spelling.'
     },
     {
+      word: 'Agave',
+      phonetic: 'uh-GAH-vee',
+      description: 'A common desert plant name in the Southwest. Often mispronounced as "uh-GAH-vay."'
+    },
+    {
       word: 'Arroyo Seco',
       phonetic: 'Ahr-oi-ya say-ko',
       // audioUrl: '/audio/arroyo_seco.mp3',
@@ -21,6 +26,11 @@ export const newMexico: State = {
       phonetic: 'Ka-vah-yoh',
       // audioUrl: '/audio/caballo.mp3',
       description: 'A town named after the Spanish word for "horse," often mispronounced by non-Spanish speakers.'
+    },
+    {
+      word: 'Creosote',
+      phonetic: 'KREE-uh-soht',
+      description: 'The creosote bush, common in Southwestern deserts. Often mispronounced as "KREE-oh-soht."'
     },
     {
       word: 'Chimayó',

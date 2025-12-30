@@ -5,6 +5,11 @@ export const texas: State = {
   abbreviation: 'TX',
   terms: [
     {
+      word: 'Agave',
+      phonetic: 'uh-GAH-vee',
+      description: 'A common desert plant name in the Southwest. Often mispronounced as "uh-GAH-vay."'
+    },
+    {
       word: 'Amarillo',
       phonetic: 'am-uh-RILL-oh',
       // audioUrl: '/audio/amarillo.mp3',
@@ -21,6 +26,11 @@ export const texas: State = {
       phonetic: 'bear',
       // audioUrl: '/audio/bexar.mp3',
       description: 'A county in South Texas, pronounced as "bear," despite its Spanish origin.'
+    },
+    {
+      word: 'Creosote',
+      phonetic: 'KREE-uh-soht',
+      description: 'The creosote bush, common in Southwestern deserts. Often mispronounced as "KREE-oh-soht."'
     },
     {
       word: 'Boerne',

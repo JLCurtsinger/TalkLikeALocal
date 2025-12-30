@@ -5,6 +5,11 @@ export const arizona: State = {
   abbreviation: 'AZ',
   terms: [
     {
+      word: 'Agave',
+      phonetic: 'uh-GAH-vee',
+      description: 'A common desert plant name in the Southwest. Often mispronounced as "uh-GAH-vay."'
+    },
+    {
       word: 'Ahwatukee',
       phonetic: 'awe-wuh-too-kee',
       // audioUrl: '/audio/arizona.mp3',
@@ -73,6 +78,11 @@ export const arizona: State = {
       word: "Cocopa",
       phonetic: "KO-ko-pah",
       description: "Referring to the Cocopa tribe, indigenous to the southwestern U.S. and northern Mexico.",
+    },
+    {
+      word: 'Creosote',
+      phonetic: 'KREE-uh-soht',
+      description: 'The creosote bush, common in Southwestern deserts. Often mispronounced as "KREE-oh-soht."'
     },
     {
       word: 'Estrella',
@@ -190,6 +200,11 @@ export const arizona: State = {
       phonetic: 'PIE-yoot',
       // audioUrl: '/audio/prescott.mp3',
       description: 'Located in northwestern Arizona, often mispronounced as PAY-oot.'
+    },
+    {
+      word: 'Palo Verde',
+      phonetic: 'PAH-loh VEHR-day',
+      description: 'A common Southwestern desert tree name. Often mispronounced as "PAL-oh VER-dee."'
     },
     {
       word: 'Papago',

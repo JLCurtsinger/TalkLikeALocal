@@ -5,6 +5,11 @@ export const california: State = {
   abbreviation: 'CA',
   terms: [
     {
+      word: 'Agave',
+      phonetic: 'uh-GAH-vee',
+      description: 'A common desert plant name in the Southwest. Often mispronounced as "uh-GAH-vay."'
+    },
+    {
       word: 'Bernal Heights',
       phonetic: 'BURR-nul',
       // audioUrl: '/audio/napa.mp3',
@@ -15,6 +20,11 @@ export const california: State = {
       phonetic: 'kah-mah-REE-yoh',
       // audioUrl: '/audio/camarillo.mp3',
       description: 'A city in Ventura County, pronounced "kah-mah-REE-yoh," not "kah-mah-RILL-oh."'
+    },
+    {
+      word: 'Creosote',
+      phonetic: 'KREE-uh-soht',
+      description: 'The creosote bush, common in Southwestern deserts. Often mispronounced as "KREE-oh-soht."'
     },
     {
       word: 'El Cajon',
@@ -92,6 +102,11 @@ export const california: State = {
       phonetic: 'PASS-oh ROH-buhlz',
       // audioUrl: '/audio/paso_robles.mp3',
       description: 'A city in San Luis Obispo County, pronounced "PASS-oh ROH-buhlz," not "PAH-soh ROH-blays."'
+    },
+    {
+      word: 'Palo Verde',
+      phonetic: 'PAH-loh VEHR-day',
+      description: 'A common Southwestern desert tree name. Often mispronounced as "PAL-oh VER-dee."'
     },
     {
       word: 'Petaluma',

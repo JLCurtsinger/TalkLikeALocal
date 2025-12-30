@@ -5,6 +5,11 @@ export const nevada: State = {
   abbreviation: 'NV',
   terms: [
     {
+      word: 'Creosote',
+      phonetic: 'KREE-uh-soht',
+      description: 'The creosote bush, common in Southwestern deserts. Often mispronounced as "KREE-oh-soht."'
+    },
+    {
       word: 'Ely',
       phonetic: 'EE-lee',
       // audioUrl: '/audio/ely.mp3',
@@ -39,6 +44,11 @@ export const nevada: State = {
       phonetic: 'oh-WYE-hee',
       // audioUrl: '/audio/owyhee.mp3',
       description: 'A town in northern Nevada, pronounced similarly to "Hawaii."'
+    },
+    {
+      word: 'Palo Verde',
+      phonetic: 'PAH-loh VEHR-day',
+      description: 'A common Southwestern desert tree name. Often mispronounced as "PAL-oh VER-dee."'
     },
     {
       word: 'Pahranagat',

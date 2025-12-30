@@ -11,6 +11,11 @@ export const utah: State = {
       description: 'A small alpine city in Utah.'
     },
     {
+      word: 'Creosote',
+      phonetic: 'KREE-uh-soht',
+      description: 'The creosote bush, common in Southwestern deserts. Often mispronounced as "KREE-oh-soht."'
+    },
+    {
       word: 'Hurricane',
       phonetic: 'HER-uh-kun',
       // audioUrl: '/audio/hurricane.mp3',
