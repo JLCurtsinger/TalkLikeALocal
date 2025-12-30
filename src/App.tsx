@@ -65,42 +65,112 @@ export default function App() {
       if (hash.startsWith('term-')) {
         const termId = hash;
         
-        // O(1) lookup in term index
-        const termLocation = termIndex.get(termId);
+        // DEV-only logging for term-agave debugging
+        if (import.meta.env.DEV && termId === 'term-agave') {
+          console.log('[Hash Navigation] Processing term-agave');
+          console.log('[Hash Navigation] Target ID:', termId);
+        }
         
-        if (termLocation) {
-          // Expand the state FIRST, then scroll (expansion triggers re-render)
-          setExpandedStates(prev => new Set([...prev, termLocation.stateName]));
+        // O(1) lookup in term index (now returns array)
+        const termLocations = termIndex.get(termId);
+        
+        let selectedLocation: { stateName: string; letter: string } | null = null;
+        
+        if (termLocations && termLocations.length > 0) {
+          // If multiple states have this term, prefer the one matching current route
+          // For now, since we don't have state-specific routes, just use the first one
+          // (stable deterministic choice)
+          selectedLocation = termLocations[0];
           
-          // Wait for expansion to complete before scrolling
+          if (import.meta.env.DEV && termId === 'term-agave') {
+            console.log('[Hash Navigation] Found locations:', termLocations);
+            console.log('[Hash Navigation] Selected location:', selectedLocation);
+          }
+        } else {
+          // Index lookup failed - try DOM lookup as fallback
+          const element = document.getElementById(termId);
+          if (element) {
+            // Find which state section contains this element
+            const stateSection = element.closest('section[id]');
+            if (stateSection) {
+              const stateId = stateSection.id;
+              const stateName = states.find(state => 
+                generateTermId(state.name) === stateId
+              )?.name;
+              
+              if (stateName) {
+                selectedLocation = {
+                  stateName,
+                  letter: termId.replace('term-', '')[0]?.toUpperCase() || '',
+                };
+                
+                if (import.meta.env.DEV && termId === 'term-agave') {
+                  console.log('[Hash Navigation] Fallback: Found via DOM lookup');
+                  console.log('[Hash Navigation] Fallback location:', selectedLocation);
+                }
+              }
+            }
+          }
+          
+          if (import.meta.env.DEV && termId === 'term-agave') {
+            const elementAfterFallback = document.getElementById(termId);
+            console.log('[Hash Navigation] Element exists after fallback:', !!elementAfterFallback);
+          }
+        }
+        
+        if (selectedLocation) {
+          const targetStateName = selectedLocation.stateName;
+          
+          // Always ensure the state is expanded before scrolling
+          // Check if state is not expanded, and expand if needed
+          const needsExpansion = !expandedStates.has(targetStateName);
+          
+          if (needsExpansion) {
+            setExpandedStates(prev => new Set([...prev, targetStateName]));
+          }
+          
+          // Wait for expansion to complete before scrolling (if expansion was needed)
           // Use requestAnimationFrame to ensure DOM has updated
-          requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-              // Use reliable hash scrolling with retry logic
-              scrollToHash({
-                hash: termId,
-                onElementFound: (element) => {
-                  // Dev-only check: verify ID match
-                  if (process.env.NODE_ENV === 'development') {
-                    const expectedId = termId;
-                    const actualId = element.id;
-                    if (expectedId !== actualId) {
-                      console.warn(`[Hash Scroll] ID mismatch! Expected: ${expectedId}, Actual: ${actualId}`);
-                    } else {
-                      console.log(`[Hash Scroll] Successfully found element with ID: ${actualId}`);
-                    }
+          const scrollDelay = needsExpansion ? 2 : 1; // Extra frame if we expanded
+          let frameCount = 0;
+          const doScroll = () => {
+            frameCount++;
+            if (frameCount < scrollDelay) {
+              requestAnimationFrame(doScroll);
+              return;
+            }
+            
+            // Use reliable hash scrolling with retry logic
+            scrollToHash({
+              hash: termId,
+              onElementFound: (element) => {
+                // Dev-only check: verify ID match
+                if (import.meta.env.DEV) {
+                  const expectedId = termId;
+                  const actualId = element.id;
+                  if (expectedId !== actualId) {
+                    console.warn(`[Hash Scroll] ID mismatch! Expected: ${expectedId}, Actual: ${actualId}`);
+                  } else {
+                    console.log(`[Hash Scroll] Successfully found element with ID: ${actualId}`);
                   }
                   
-                  // Apply highlight class
-                  element.classList.add('highlighted-term');
-                  // Remove highlight after 2 seconds
-                  setTimeout(() => {
-                    element.classList.remove('highlighted-term');
-                  }, 2000);
-                },
-              });
+                  if (termId === 'term-agave') {
+                    console.log('[Hash Scroll] term-agave element found:', element);
+                    console.log('[Hash Scroll] Element parent section:', element.closest('section[id]')?.id);
+                  }
+                }
+                
+                // Apply highlight class
+                element.classList.add('highlighted-term');
+                // Remove highlight after 2 seconds
+                setTimeout(() => {
+                  element.classList.remove('highlighted-term');
+                }, 2000);
+              },
             });
-          });
+          };
+          
+          requestAnimationFrame(doScroll);
         }
         // If term not found, fail gracefully (do nothing)
       } else {
@@ -160,14 +230,58 @@ export default function App() {
         if (hash.startsWith('term-')) {
           const termId = hash;
           
-          // O(1) lookup in term index
-          const termLocation = termIndex.get(termId);
+          // DEV-only logging for term-agave debugging
+          if (import.meta.env.DEV && termId === 'term-agave') {
+            console.log('[HashChange] Processing term-agave');
+          }
           
-          if (termLocation) {
-            // Expand FIRST, then scroll
-            setExpandedStates(prev => new Set([...prev, termLocation.stateName]));
+          // O(1) lookup in term index (now returns array)
+          const termLocations = termIndex.get(termId);
+          
+          let selectedLocation: { stateName: string; letter: string } | null = null;
+          
+          if (termLocations && termLocations.length > 0) {
+            // If multiple states have this term, prefer the first one (stable deterministic choice)
+            selectedLocation = termLocations[0];
+          } else {
+            // Index lookup failed - try DOM lookup as fallback
+            const element = document.getElementById(termId);
+            if (element) {
+              // Find which state section contains this element
+              const stateSection = element.closest('section[id]');
+              if (stateSection) {
+                const stateId = stateSection.id;
+                const stateName = states.find(state => 
+                  generateTermId(state.name) === stateId
+                )?.name;
+                
+                if (stateName) {
+                  selectedLocation = {
+                    stateName,
+                    letter: termId.replace('term-', '')[0]?.toUpperCase() || '',
+                  };
+                }
+              }
+            }
+          }
+          
+          if (selectedLocation) {
+            const targetStateName = selectedLocation.stateName;
             
-            // Wait for expansion to complete
+            // Always ensure the state is expanded before scrolling
+            // Check if state is not expanded, and expand if needed
+            // Note: We need to check expandedStates from the closure, but since this is in a useEffect,
+            // we'll use a functional update to check current state
+            setExpandedStates(prev => {
+              const needsExpansion = !prev.has(targetStateName);
+              if (needsExpansion) {
+                return new Set([...prev, targetStateName]);
+              }
+              return prev;
+            });
+            
+            // Wait for expansion to complete before scrolling
+            // Use requestAnimationFrame to ensure DOM has updated
             requestAnimationFrame(() => {
               requestAnimationFrame(() => {
                 scrollToHash({

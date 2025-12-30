@@ -18,22 +18,30 @@ export interface CultureTermLocation {
 }
 
 /**
- * Builds an index map of term IDs to their state location
+ * Builds an index map of term IDs to their state locations
  * Key: term-{slug} (e.g., "term-cholla")
- * Value: { stateName, letter }
+ * Value: Array of { stateName, letter } for terms that exist in multiple states
  */
-export function buildStateTermIndex(states: State[]): Map<string, StateTermLocation> {
-  const index = new Map<string, StateTermLocation>();
+export function buildStateTermIndex(states: State[]): Map<string, StateTermLocation[]> {
+  const index = new Map<string, StateTermLocation[]>();
 
   for (const state of states) {
     for (const term of state.terms) {
       const termId = generateTermCardId(term.word);
       const letter = term.word[0]?.toUpperCase() || '';
       
-      index.set(termId, {
+      const location: StateTermLocation = {
         stateName: state.name,
         letter,
-      });
+      };
+      
+      // Append to array if term exists in multiple states
+      const existing = index.get(termId);
+      if (existing) {
+        existing.push(location);
+      } else {
+        index.set(termId, [location]);
+      }
     }
   }
 
