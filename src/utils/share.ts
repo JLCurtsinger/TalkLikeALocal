@@ -18,16 +18,19 @@ export function generateTermCardId(word: string): string {
   return `term-${slug}`;
 }
 
+export function buildTermUrl(term: Term, context: string, baseUrl = 'https://talklikealocal.org'): string {
+  const termId = generateTermCardId(term.word);
+  return `${baseUrl}${context === 'Cultural Terms' ? '/cultural-terms' : ''}#${termId}`;
+}
+
 export async function shareTerm({ term, context, baseUrl = 'https://talklikealocal.org' }: ShareData): Promise<boolean> {
   try {
     const termId = generateTermCardId(term.word);
     const shareText = `${term.word} (${term.phonetic})${term.description ? ` - ${term.description}` : ''}\nFrom ${context} on Talk Like a Local`;
-    const shareUrl = `${baseUrl}${context === 'Cultural Terms' ? '/cultural-terms' : ''}#${termId}`;
+    const shareUrl = buildTermUrl(term, context, baseUrl);
 
-    // Check if we're on mobile and Web Share API is available
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-    
-    if (isMobile && navigator.share && window.isSecureContext) {
+    // Try Web Share API if available (works on mobile and some desktop browsers)
+    if (navigator.share && window.isSecureContext) {
       try {
         await navigator.share({
           title: `Discover ${term.word} on Talk Like a Local`,
@@ -41,13 +44,11 @@ export async function shareTerm({ term, context, baseUrl = 'https://talklikealoc
           return false;
         }
         
-        // Permission denied or security error - fall back to clipboard
+        // Permission denied or security error - return false so UI can handle fallback
         if (shareError.name === 'SecurityError' || 
             shareError.name === 'NotAllowedError' || 
             shareError.message.includes('Permission denied')) {
-          console.warn('Share API not available or permission denied, falling back to clipboard');
-          await navigator.clipboard.writeText(shareUrl);
-          return true;
+          return false;
         }
         
         // Re-throw unexpected errors
@@ -55,13 +56,23 @@ export async function shareTerm({ term, context, baseUrl = 'https://talklikealoc
       }
     }
 
-    // Default behavior: copy link to clipboard (desktop and mobile fallback)
-    await navigator.clipboard.writeText(shareUrl);
-    return true;
+    // Web Share API not available - return false so UI can show fallback menu
+    return false;
   } catch (error) {
     if (error instanceof Error && error.name !== 'AbortError') {
       console.error('Error sharing:', error);
     }
+    return false;
+  }
+}
+
+export async function copyTermLink({ term, context, baseUrl = 'https://talklikealocal.org' }: ShareData): Promise<boolean> {
+  try {
+    const shareUrl = buildTermUrl(term, context, baseUrl);
+    await navigator.clipboard.writeText(shareUrl);
+    return true;
+  } catch (error) {
+    console.error('Error copying link:', error);
     return false;
   }
 }
