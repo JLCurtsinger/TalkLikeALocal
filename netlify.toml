@@ -17,6 +17,7 @@ publish = "dist"
 
 [build.environment]
 NODE_VERSION = "20"
+PRERENDER_MODE = "critical"
 
 [[redirects]]
   from = "/ads.txt"

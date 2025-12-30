@@ -12,6 +12,20 @@ const SOURCES = [
 // Acceptable page file extensions:
 const VALID_EXTS = new Set(['.tsx', '.ts', '.jsx', '.js', '.md', '.mdx', '.html']);
 
+// Default critical routes allowlist (prerendered in CI)
+const DEFAULT_CRITICAL_ROUTES = [
+  '/',
+  '/states/arizona',
+  '/states/california',
+  '/states/texas',
+  '/states/florida',
+  '/states/new-york',
+  '/tribes/navajo',
+  '/tribes/hopi',
+  '/tribes/cherokee',
+  '/cultural-terms',
+];
+
 // Helper: create a slug from a filename (strip ext, lowercase, spaces->hyphens)
 function toSlug(filename) {
   const name = filename.replace(/\.[^.]+$/, '');
@@ -59,9 +73,22 @@ function dedupe(list) {
   return Array.from(new Set(list));
 }
 
+function filterRoutes(allRoutes, allowlist) {
+  const allowlistSet = new Set(allowlist);
+  return allRoutes.filter(route => allowlistSet.has(route));
+}
+
 async function main() {
-  // Always include the homepage
-  const staticRoutes = ['/'];
+  // Always include the homepage and static page routes
+  const staticRoutes = [
+    '/',
+    '/cultural-terms',
+    '/about',
+    '/terms',
+    '/privacy',
+    '/support',
+    '/impact',
+  ];
 
   let discovered = [];
   for (const src of SOURCES) {
@@ -69,11 +96,34 @@ async function main() {
     discovered = discovered.concat(routes);
   }
 
-  const all = dedupe(staticRoutes.concat(discovered)).sort();
+  const allRoutes = dedupe(staticRoutes.concat(discovered)).sort();
+
+  // Determine prerender mode
+  const prerenderMode = process.env.PRERENDER_MODE || (process.env.NETLIFY === 'true' ? 'critical' : 'all');
+  const isCriticalMode = prerenderMode === 'critical';
+
+  let routesToPrerender = allRoutes;
+
+  if (isCriticalMode) {
+    // Check for PRERENDER_ROUTES override
+    if (process.env.PRERENDER_ROUTES) {
+      const overrideRoutes = process.env.PRERENDER_ROUTES.split(',')
+        .map(r => r.trim())
+        .filter(r => r.length > 0);
+      routesToPrerender = filterRoutes(allRoutes, overrideRoutes);
+      console.log(`[routes] Using PRERENDER_ROUTES override: ${routesToPrerender.length} routes`);
+    } else {
+      // Use default critical allowlist
+      routesToPrerender = filterRoutes(allRoutes, DEFAULT_CRITICAL_ROUTES);
+      console.log(`[routes] Critical mode: filtering to ${routesToPrerender.length} critical routes`);
+    }
+  } else {
+    console.log(`[routes] All mode: prerendering all ${allRoutes.length} routes`);
+  }
 
   await fs.mkdir(path.dirname(OUT), { recursive: true });
-  await fs.writeFile(OUT, JSON.stringify(all, null, 2), 'utf-8');
-  console.log(`[routes] wrote ${OUT} with ${all.length} routes`);
+  await fs.writeFile(OUT, JSON.stringify(routesToPrerender, null, 2), 'utf-8');
+  console.log(`[routes] wrote ${OUT} with ${routesToPrerender.length} routes`);
 }
 
 main().then(() => {
