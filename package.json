@@ -12,7 +12,11 @@
     "preview": "vite preview",
     "seo:build": "node scripts/discover-routes.mjs && node scripts/prerender.mjs && node scripts/generate-sitemap.mjs",
     "seo:preview": "vite preview --port 4173 --strictPort",
-    "seo:routes": "node -e \"import('fs').then(fs => { console.log(fs.readFileSync('scripts/prerender.routes.json','utf8')); process.exit(0); })\""
+    "seo:routes": "node -e \"import('fs').then(fs => { console.log(fs.readFileSync('scripts/prerender.routes.json','utf8')); process.exit(0); })\"",
+    "astro:dev": "npm run dev --prefix apps/site-astro",
+    "astro:build": "npm run build --prefix apps/site-astro",
+    "astro:preview": "npm run preview --prefix apps/site-astro",
+    "astro:check": "npm run check --prefix apps/site-astro"
   },
   "dependencies": {
     "@tsparticles/engine": "^3.3.0",
