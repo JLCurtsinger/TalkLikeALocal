@@ -13,14 +13,21 @@ export function generateTermId(word: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
+export function generateTermCardId(word: string): string {
+  const slug = generateTermId(word);
+  return `term-${slug}`;
+}
+
 export async function shareTerm({ term, context, baseUrl = 'https://talklikealocal.org' }: ShareData): Promise<boolean> {
   try {
-    const termId = generateTermId(term.word);
+    const termId = generateTermCardId(term.word);
     const shareText = `${term.word} (${term.phonetic})${term.description ? ` - ${term.description}` : ''}\nFrom ${context} on Talk Like a Local`;
     const shareUrl = `${baseUrl}${context === 'Cultural Terms' ? '/cultural-terms' : ''}#${termId}`;
 
-    // Check if Web Share API is available and we're in a secure context
-    if (navigator.share && window.isSecureContext) {
+    // Check if we're on mobile and Web Share API is available
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile && navigator.share && window.isSecureContext) {
       try {
         await navigator.share({
           title: `Discover ${term.word} on Talk Like a Local`,
@@ -39,7 +46,7 @@ export async function shareTerm({ term, context, baseUrl = 'https://talklikealoc
             shareError.name === 'NotAllowedError' || 
             shareError.message.includes('Permission denied')) {
           console.warn('Share API not available or permission denied, falling back to clipboard');
-          await navigator.clipboard.writeText(`${shareText}\nLearn more at ${shareUrl}`);
+          await navigator.clipboard.writeText(shareUrl);
           return true;
         }
         
@@ -48,8 +55,8 @@ export async function shareTerm({ term, context, baseUrl = 'https://talklikealoc
       }
     }
 
-    // Fallback to clipboard if Web Share API is not available
-    await navigator.clipboard.writeText(`${shareText}\nLearn more at ${shareUrl}`);
+    // Default behavior: copy link to clipboard (desktop and mobile fallback)
+    await navigator.clipboard.writeText(shareUrl);
     return true;
   } catch (error) {
     if (error instanceof Error && error.name !== 'AbortError') {

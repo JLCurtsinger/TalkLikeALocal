@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Term } from '../types';
-import { generateTermId } from '../utils/share';
+import { generateTermCardId } from '../utils/share';
 
 interface NestedAlphabetNavProps {
   terms: Term[];
@@ -23,7 +23,7 @@ export function NestedAlphabetNav({ terms, sectionName, isVisible }: NestedAlpha
     const handleScroll = () => {
       // Check each term's position to determine current letter
       for (const term of terms) {
-        const element = document.getElementById(generateTermId(term.word));
+        const element = document.getElementById(generateTermCardId(term.word));
         if (!element) continue;
         
         const rect = element.getBoundingClientRect();
@@ -42,7 +42,7 @@ export function NestedAlphabetNav({ terms, sectionName, isVisible }: NestedAlpha
     const term = terms.find(t => t.word[0].toUpperCase() === letter);
     if (!term) return;
 
-    const element = document.getElementById(generateTermId(term.word));
+    const element = document.getElementById(generateTermCardId(term.word));
     if (!element) return;
 
     const navbarHeight = 64;

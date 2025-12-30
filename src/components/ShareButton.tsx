@@ -13,9 +13,14 @@ export function ShareButton({ term, context }: ShareButtonProps) {
   const handleShare = async () => {
     const success = await shareTerm({ term, context });
     
-    if (success && !navigator.share) {
-      setShowTooltip(true);
-      setTimeout(() => setShowTooltip(false), 2000);
+    // Show tooltip when link is copied to clipboard
+    if (success) {
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      // Only show tooltip if we copied to clipboard (not if native share was used)
+      if (!isMobile || !navigator.share || !window.isSecureContext) {
+        setShowTooltip(true);
+        setTimeout(() => setShowTooltip(false), 2000);
+      }
     }
   };
 

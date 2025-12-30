@@ -3,7 +3,7 @@ import { ChevronDown, ChevronRight } from 'lucide-react';
 import { State, Term } from '../types';
 import { ShareButton } from './ShareButton';
 import { NestedAlphabetNav } from './NestedAlphabetNav';
-import { generateTermId } from '../utils/share';
+import { generateTermId, generateTermCardId } from '../utils/share';
 import { useTheme } from '../contexts/ThemeContext';
 
 interface StateSectionProps {
@@ -79,7 +79,7 @@ export function StateSection({ state, isExpanded, onToggle, filteredTerms }: Sta
         {termsToDisplay.map((term, index) => (
           <div 
             key={`${state.name}-${term.word}-${index}`} 
-            id={generateTermId(term.word)}
+            id={generateTermCardId(term.word)}
             className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors scroll-mt-24 relative z-10"
           >
             <div className="flex items-center justify-between">

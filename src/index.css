@@ -81,3 +81,43 @@ section[id] {
   animation: fadeSlideDown 0.8s ease-out forwards;
   animation-delay: 0.6s;
 }
+
+/* Term highlight effect for deep-linking */
+.highlighted-term {
+  animation: highlightPulse 2s ease-out forwards;
+}
+
+@keyframes highlightPulse {
+  0% {
+    background-color: rgba(59, 130, 246, 0.2);
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
+  }
+  50% {
+    background-color: rgba(59, 130, 246, 0.15);
+    box-shadow: 0 0 20px 5px rgba(59, 130, 246, 0.3);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+  }
+}
+
+/* Dark mode highlight */
+.dark .highlighted-term {
+  animation: highlightPulseDark 2s ease-out forwards;
+}
+
+@keyframes highlightPulseDark {
+  0% {
+    background-color: rgba(96, 165, 250, 0.2);
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0.4);
+  }
+  50% {
+    background-color: rgba(96, 165, 250, 0.15);
+    box-shadow: 0 0 20px 5px rgba(96, 165, 250, 0.3);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 0 rgba(96, 165, 250, 0);
+  }
+}

@@ -60,29 +60,93 @@ export default function App() {
         }
       }, 100);
     } else if (location.hash) {
-      const termId = location.hash.slice(1);
-      const element = document.getElementById(termId);
-      if (element) {
-        const stateSection = element.closest('section');
-        if (stateSection) {
-          const stateName = states.find(state => 
-            generateTermId(state.name) === stateSection.id
-          )?.name;
-          if (stateName) {
-            setExpandedStates(prev => new Set([...prev, stateName]));
+      const hash = location.hash.slice(1);
+      
+      // Check if hash is a term ID (starts with "term-")
+      if (hash.startsWith('term-')) {
+        const termId = hash;
+        const element = document.getElementById(termId);
+        
+        // Find which state contains this term by searching through states data
+        let stateName: string | undefined;
+        if (element) {
+          // If element exists, find its parent state section
+          const stateSection = element.closest('section');
+          if (stateSection) {
+            stateName = states.find(state => 
+              generateTermId(state.name) === stateSection.id
+            )?.name;
+          }
+        } else {
+          // If element doesn't exist (state is collapsed), search through states data
+          // Extract the word from the term ID (remove "term-" prefix)
+          const wordSlug = termId.replace(/^term-/, '');
+          for (const state of states) {
+            const hasTerm = state.terms.some(term => {
+              const termSlug = generateTermId(term.word);
+              return termSlug === wordSlug;
+            });
+            if (hasTerm) {
+              stateName = state.name;
+              break;
+            }
           }
         }
+        
+        // Expand the state if found
+        if (stateName) {
+          setExpandedStates(prev => new Set([...prev, stateName!]));
+        }
+        
+        // Wait for state to expand and DOM to update, then scroll and highlight
         setTimeout(() => {
           const navbarHeight = 64;
           const padding = 24;
-          const elementPosition = element.getBoundingClientRect().top;
-          const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - padding;
+          const termElement = document.getElementById(termId);
+          
+          if (termElement) {
+            const elementPosition = termElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - padding;
 
-          window.scrollTo({
-            top: offsetPosition,
-            behavior: 'smooth'
-          });
-        }, 100);
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+            
+            // Apply highlight class
+            termElement.classList.add('highlighted-term');
+            
+            // Remove highlight after 2 seconds
+            setTimeout(() => {
+              termElement.classList.remove('highlighted-term');
+            }, 2000);
+          }
+        }, 300);
+      } else {
+        // Handle non-term hashes (like state sections)
+        const element = document.getElementById(hash);
+        if (element) {
+          const stateSection = element.closest('section');
+          if (stateSection) {
+            const stateName = states.find(state => 
+              generateTermId(state.name) === stateSection.id
+            )?.name;
+            if (stateName) {
+              setExpandedStates(prev => new Set([...prev, stateName]));
+            }
+          }
+          setTimeout(() => {
+            const navbarHeight = 64;
+            const padding = 24;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - padding;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }, 100);
+        }
       }
     } else {
       window.scrollTo({

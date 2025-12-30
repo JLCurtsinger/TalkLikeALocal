@@ -8,7 +8,7 @@ import { BackToTop } from '../components/BackToTop';
 import { ShareButton } from '../components/ShareButton';
 import { NestedAlphabetNav } from '../components/NestedAlphabetNav';
 import { AlphabetNav } from '../components/AlphabetNav';
-import { generateTermId } from '../utils/share';
+import { generateTermId, generateTermCardId } from '../utils/share';
 import { Helmet } from 'react-helmet-async';
 import { SparklesCore } from '../components/ui/sparkles';
 import { useTheme } from '../contexts/ThemeContext';
@@ -31,10 +31,94 @@ export default function CulturalTerms() {
   }, []);
 
   useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: 'smooth'
-    });
+    if (location.hash) {
+      const hash = location.hash.slice(1);
+      
+      // Check if hash is a term ID (starts with "term-")
+      if (hash.startsWith('term-')) {
+        const termId = hash;
+        const element = document.getElementById(termId);
+        
+        // Find which culture contains this term by searching through cultures data
+        let cultureName: string | undefined;
+        if (element) {
+          // If element exists, find its parent culture section
+          const contentDiv = element.closest('[id^="content-"]');
+          const cultureSection = contentDiv?.parentElement;
+          if (cultureSection) {
+            const cultureId = cultureSection.id;
+            cultureName = cultures.find(culture => 
+              generateTermId(culture.name) === cultureId
+            )?.name;
+          }
+        } else {
+          // If element doesn't exist (culture is collapsed), search through cultures data
+          // Extract the word from the term ID (remove "term-" prefix)
+          const wordSlug = termId.replace(/^term-/, '');
+          for (const culture of cultures) {
+            const hasTerm = culture.terms.some((term: any) => {
+              const termSlug = generateTermId(term.word);
+              return termSlug === wordSlug;
+            });
+            if (hasTerm) {
+              cultureName = culture.name;
+              break;
+            }
+          }
+        }
+        
+        // Expand the culture if found
+        if (cultureName) {
+          setExpandedCultures(prev => new Set([...prev, cultureName!]));
+        }
+        
+        // Wait for culture to expand and DOM to update, then scroll and highlight
+        setTimeout(() => {
+          const navbarHeight = 64;
+          const padding = 24;
+          const termElement = document.getElementById(termId);
+          
+          if (termElement) {
+            const elementPosition = termElement.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - padding;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+            
+            // Apply highlight class
+            termElement.classList.add('highlighted-term');
+            
+            // Remove highlight after 2 seconds
+            setTimeout(() => {
+              termElement.classList.remove('highlighted-term');
+            }, 2000);
+          }
+        }, 300);
+      } else {
+        // Handle non-term hashes
+        const element = document.getElementById(hash);
+        if (element) {
+          setTimeout(() => {
+            const navbarHeight = 64;
+            const padding = 24;
+            const elementPosition = element.getBoundingClientRect().top;
+            const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - padding;
+
+            window.scrollTo({
+              top: offsetPosition,
+              behavior: 'smooth'
+            });
+          }, 100);
+        }
+      }
+    } else {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   }, [location]);
 
   const toggleCulture = (cultureName: string) => {
@@ -321,7 +405,7 @@ function CultureSection({ culture, isExpanded, onToggle, searchTerm }: CultureSe
                   {filteredTerms.map((term: any, index: number) => (
                     <div 
                       key={`${culture.name}-${term.word}-${index}`}
-                      id={generateTermId(term.word)}
+                      id={generateTermCardId(term.word)}
                       className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6"
                     >
                       <div className="flex items-center justify-between">
