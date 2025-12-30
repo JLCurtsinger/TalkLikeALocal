@@ -2,6 +2,7 @@ import React from 'react';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 import { State, Term } from '../types';
 import { ShareButton } from './ShareButton';
+import { CopyLinkButton } from './CopyLinkButton';
 import { NestedAlphabetNav } from './NestedAlphabetNav';
 import { generateTermId, generateTermCardId } from '../utils/share';
 import { useTheme } from '../contexts/ThemeContext';
@@ -90,7 +91,10 @@ export function StateSection({ state, isExpanded, onToggle, filteredTerms }: Sta
                   <p className="text-gray-500 dark:text-gray-400 mt-2">{term.description}</p>
                 )}
               </div>
-              <ShareButton term={term} context={state.name} />
+              <div className="flex items-center gap-0">
+                <ShareButton term={term} context={state.name} />
+                <CopyLinkButton term={term} context={state.name} />
+              </div>
             </div>
           </div>
         ))}

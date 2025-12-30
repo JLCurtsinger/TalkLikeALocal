@@ -6,6 +6,7 @@ import { cultures } from '../data/cultures';
 import { SearchBar } from '../components/SearchBar';
 import { BackToTop } from '../components/BackToTop';
 import { ShareButton } from '../components/ShareButton';
+import { CopyLinkButton } from '../components/CopyLinkButton';
 import { NestedAlphabetNav } from '../components/NestedAlphabetNav';
 import { AlphabetNav } from '../components/AlphabetNav';
 import { generateTermId, generateTermCardId } from '../utils/share';
@@ -416,7 +417,10 @@ function CultureSection({ culture, isExpanded, onToggle, searchTerm }: CultureSe
                             <p className="text-gray-500 dark:text-gray-400 mt-2">{term.description}</p>
                           )}
                         </div>
-                        <ShareButton term={term} context="Cultural Terms" />
+                        <div className="flex items-center gap-0">
+                          <ShareButton term={term} context="Cultural Terms" />
+                          <CopyLinkButton term={term} context="Cultural Terms" />
+                        </div>
                       </div>
                     </div>
                   ))}
