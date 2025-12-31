@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { MapPin, Menu, X, BookOpen } from 'lucide-react';
+import { Menu, X, BookOpen } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { DisputeForm } from './DisputeForm';
 
@@ -76,8 +76,7 @@ export function Navigation() {
               onClick={handleLogoClick}
               className="flex items-center space-x-2 text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
             >
-              <MapPin className="w-6 h-6 text-blue-500" />
-              <span>TalkLikeALocal</span>
+              <span>TalkLikeALocal.org</span>
             </a>
             
             <div className="flex items-center space-x-4">

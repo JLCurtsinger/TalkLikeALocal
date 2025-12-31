@@ -7,7 +7,6 @@ import { SuggestionsForm } from './components/SuggestionsForm';
 import { Navigation } from './components/Navigation';
 import { SearchBar } from './components/SearchBar';
 import { states } from './data/states';
-import { MapPin } from 'lucide-react';
 import { generateTermId } from './utils/share';
 import { Term } from './types';
 import { Helmet } from 'react-helmet-async';
@@ -433,7 +432,7 @@ export default function App() {
           
           <div className="max-w-5xl mx-auto text-center relative z-10">
             <div className="flex justify-center mb-4 hero-animate">
-              <MapPin className="w-12 h-12 text-blue-500" aria-hidden="true" />
+              <img src="/favicon.svg" alt="" className="w-12 h-12" aria-hidden="true" />
             </div>
             <h1 className="text-5xl sm:text-6xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent leading-tight hero-animate-delay-1">
               Learn to Talk Like a Local Across the U.S.!
