@@ -23,7 +23,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
   </head>
   <body>
     <Nav />
-    <main class="container">
+    <main class="container" style="padding-top: 5rem;">
       <slot />
     </main>
     <script src="/blog/nav.js" type="module" defer></script>
