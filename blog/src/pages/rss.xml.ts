@@ -7,7 +7,7 @@ export async function GET(context) {
     .sort((a,b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 
   return rss({
-    title: 'Talk Like a Local — Blog',
+    title: 'Talk Like a Local Blog',
     description: 'Pronunciations, culture, and preservation resources.',
     site: context.site?.href ?? 'https://yourdomain.com',
     items: posts.map((p) => ({

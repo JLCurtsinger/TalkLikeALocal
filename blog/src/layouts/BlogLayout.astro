@@ -48,7 +48,7 @@ const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
     <Nav />
     <main class="container" style="padding-top: 5rem;">
       <header class="page-header">
-        <a href="/blog" aria-label="Back to blog">← Back to Blog</a>
+        <a href="/blog" aria-label="Back to blog">← Back to Blogs</a>
         <h1>{title}</h1>
         {pubDate && <p class="meta">Published: {new Date(pubDate).toDateString()}</p>}
       </header>

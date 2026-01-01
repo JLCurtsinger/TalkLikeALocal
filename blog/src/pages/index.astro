@@ -5,8 +5,8 @@ const posts = (await getCollection('posts')).filter(p => !p.data.draft)
   .sort((a,b) => new Date(b.data.pubDate).getTime() - new Date(a.data.pubDate).getTime());
 ---
 <BaseLayout>
-  <h1>Talk Like a Local — Blog</h1>
-  <p>Research-backed notes on pronunciation, culture, and language preservation.</p>
+  <h1>Talk Like a Local Blog</h1>
+  <p>Interesting takes on pronunciation, culture, and language preservation.</p>
   <section class="grid">
     {posts.map((p) => (
       <a class="card" href={`/blog/${p.slug}/`}>
