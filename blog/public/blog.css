@@ -173,52 +173,57 @@ body.dark .page-header .meta {
 /* Content Typography */
 .content { 
   font-size: 1.05rem; 
-  line-height: 1.7;
+  line-height: 1.75;
   color: var(--tlal-gray-800);
+  max-width: 65ch;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 .content h1 { 
   font-size: 2.25rem; 
   line-height: 1.2; 
-  margin: 2rem 0 1rem 0; 
+  margin: 2.5rem 0 1rem 0; 
   font-weight: 700;
   color: var(--tlal-gray-900);
 }
 
 .content h2 { 
   font-size: 1.75rem; 
-  margin: 1.75rem 0 0.75rem 0; 
+  margin: 2.25rem 0 0.75rem 0; 
   font-weight: 600;
   color: var(--tlal-gray-900);
 }
 
 .content h3 { 
   font-size: 1.375rem; 
-  margin: 1.5rem 0 0.5rem 0; 
+  margin: 2rem 0 0.5rem 0; 
   font-weight: 600;
   color: var(--tlal-gray-900);
 }
 
 .content h4 {
   font-size: 1.125rem;
-  margin: 1.25rem 0 0.5rem 0;
+  margin: 1.75rem 0 0.5rem 0;
   font-weight: 600;
   color: var(--tlal-gray-900);
 }
 
 .content p { 
-  margin: 1rem 0; 
-  line-height: 1.7;
+  margin: 1.5rem 0; 
+  line-height: 1.75;
 }
 
 .content ul, .content ol { 
   padding-left: 1.5rem; 
-  margin: 1rem 0 1.5rem 0; 
+  margin: 1.5rem 0 1.5rem 0; 
 }
 
 .content li { 
-  margin: 0.5rem 0; 
-  line-height: 1.6;
+  margin: 0.75rem 0; 
+  line-height: 1.75;
 }
 
 .content a { 
@@ -233,7 +238,7 @@ body.dark .page-header .meta {
 }
 
 .content blockquote { 
-  margin: 1.5rem 0; 
+  margin: 2rem 0; 
   padding: 1rem 1.5rem; 
   border-left: 4px solid var(--tlal-purple); 
   background: var(--tlal-gray-50); 
@@ -246,7 +251,7 @@ body.dark .page-header .meta {
   max-width: 100%; 
   height: auto; 
   border-radius: 12px; 
-  margin: 1.5rem 0;
+  margin: 2rem 0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 
@@ -254,7 +259,7 @@ body.dark .page-header .meta {
   border: 0; 
   height: 1px; 
   background: var(--tlal-gray-200); 
-  margin: 2rem 0; 
+  margin: 2.5rem 0; 
 }
 
 .content code {
@@ -272,7 +277,7 @@ body.dark .page-header .meta {
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
-  margin: 1.5rem 0;
+  margin: 2rem 0;
   font-family: ui-monospace, SFMono-Regular, "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
 }
 
@@ -367,16 +372,24 @@ body.dark .page-footer a:hover {
     padding: 1rem;
   }
   
+  .content {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+  
   .content h1 {
     font-size: 1.875rem;
+    margin-top: 2rem;
   }
   
   .content h2 {
     font-size: 1.5rem;
+    margin-top: 2rem;
   }
   
   .content h3 {
     font-size: 1.25rem;
+    margin-top: 1.75rem;
   }
   
   .page-header h1 {
