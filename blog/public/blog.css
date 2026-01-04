@@ -38,6 +38,11 @@ html.dark main > p {
 
 .container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
 
+/* Blog index page heading */
+main > h1 {
+  font-weight: 700;
+}
+
 /* Grid Layout */
 .grid {
   display: grid;
@@ -188,6 +193,21 @@ html.dark .page-header .meta {
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+/* Narrow body text for blog posts while keeping headings full width */
+.post-content :where(p, ul, ol, blockquote, pre, table) {
+  max-width: 60ch;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.post-content :where(li) {
+  max-width: 60ch;
+}
+
+.post-content :where(h1, h2, h3, h4) {
+  max-width: none;
 }
 
 .content h1 { 
