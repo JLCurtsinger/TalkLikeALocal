@@ -123,6 +123,11 @@ section[id] {
 }
 
 /* Dark mode background color override - replace navy with neutral black */
+.dark {
+  --tw-gray-900: 20 19 19;
+  --tw-gray-800: 20 19 19;
+}
+
 .dark .bg-gray-900 {
   background-color: #141313 !important;
 }
@@ -135,6 +140,22 @@ section[id] {
   background-color: #141313 !important;
 }
 
+/* Navbar background override - target nav element directly */
+.dark nav.fixed {
+  background-color: rgba(20, 19, 19, 0.9) !important;
+}
+
+/* Footer background override - target footer element directly */
+.dark footer {
+  background-color: #141313 !important;
+}
+
+/* Main container gradient override - target the main page containers */
+.dark .min-h-screen.bg-gradient-to-b {
+  background-image: linear-gradient(to bottom, #141313, #141313) !important;
+}
+
+/* Opacity variant overrides */
 .dark .bg-gray-900\/90 {
   background-color: rgba(20, 19, 19, 0.9) !important;
 }
@@ -151,6 +172,7 @@ section[id] {
   background-color: rgba(20, 19, 19, 0.3) !important;
 }
 
+/* Gradient variable overrides */
 .dark .from-gray-900 {
   --tw-gradient-from: #141313 !important;
   --tw-gradient-to: rgba(20, 19, 19, 0) !important;

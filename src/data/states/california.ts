@@ -51,6 +51,12 @@ export const california: State = {
       description: 'A seaside community in San Diego, often mispronounced as "La JOL-la."'
     },
     {
+      word: 'Lee Vining',
+      phonetic: 'Lee-Vy-ning',
+      // audioUrl: '/audio/napa.mp3',
+      description: 'A small town in Mono County that started as a gold mining camp by Leroy Vining.'
+    },
+    {
       word: 'Leucadia',
       phonetic: 'Loo-KAY-dee-ah',
       // audioUrl: '/audio/napa.mp3',
