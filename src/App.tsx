@@ -174,26 +174,74 @@ export default function App() {
         // If term not found, fail gracefully (do nothing)
       } else {
         // Handle non-term hashes (like state sections)
-        const element = document.getElementById(hash);
-        if (element) {
-          const stateSection = element.closest('section');
-          if (stateSection) {
-            const stateName = states.find(state => 
-              generateTermId(state.name) === stateSection.id
-            )?.name;
-            if (stateName) {
-              setExpandedStates(prev => new Set([...prev, stateName]));
-              // Wait for expansion before scrolling
-              requestAnimationFrame(() => {
+        // Support both formats: #massachusetts and #states/massachusetts (for backward compatibility)
+        let stateSlug = hash;
+        if (hash.startsWith('states/')) {
+          stateSlug = hash.replace('states/', '');
+        }
+        
+        // Find the matching state by comparing slug to generateTermId(state.name)
+        const matchingState = states.find(state => 
+          generateTermId(state.name) === stateSlug
+        );
+        
+        if (matchingState) {
+          const targetStateName = matchingState.name;
+          const stateId = generateTermId(targetStateName);
+          
+          // Always ensure the state is expanded before scrolling
+          const needsExpansion = !expandedStates.has(targetStateName);
+          
+          if (needsExpansion) {
+            setExpandedStates(prev => new Set([...prev, targetStateName]));
+          }
+          
+          // Wait for expansion to complete before scrolling (if expansion was needed)
+          const scrollDelay = needsExpansion ? 2 : 1;
+          let frameCount = 0;
+          const doScroll = () => {
+            frameCount++;
+            if (frameCount < scrollDelay) {
+              requestAnimationFrame(doScroll);
+              return;
+            }
+            
+            // Scroll to the state section by its ID
+            scrollToHash({
+              hash: stateId,
+              onElementFound: (element) => {
+                // State section found and scrolled to
+                if (import.meta.env.DEV) {
+                  console.log(`[Hash Scroll] Successfully scrolled to state section: ${targetStateName}`);
+                }
+              },
+            });
+          };
+          
+          requestAnimationFrame(doScroll);
+        } else {
+          // Fallback: try direct element lookup (for other hash targets)
+          const element = document.getElementById(hash);
+          if (element) {
+            const stateSection = element.closest('section');
+            if (stateSection) {
+              const stateName = states.find(state => 
+                generateTermId(state.name) === stateSection.id
+              )?.name;
+              if (stateName) {
+                setExpandedStates(prev => new Set([...prev, stateName]));
+                // Wait for expansion before scrolling
                 requestAnimationFrame(() => {
-                  scrollToHash({ hash });
+                  requestAnimationFrame(() => {
+                    scrollToHash({ hash });
+                  });
                 });
-              });
+              } else {
+                scrollToHash({ hash });
+              }
             } else {
               scrollToHash({ hash });
             }
-          } else {
-            scrollToHash({ hash });
           }
         }
       }
@@ -297,7 +345,49 @@ export default function App() {
           }
           // If term not found, fail gracefully (do nothing)
         } else {
-          scrollToHash({ hash });
+          // Handle non-term hashes (like state sections)
+          // Support both formats: #massachusetts and #states/massachusetts (for backward compatibility)
+          let stateSlug = hash;
+          if (hash.startsWith('states/')) {
+            stateSlug = hash.replace('states/', '');
+          }
+          
+          // Find the matching state by comparing slug to generateTermId(state.name)
+          const matchingState = states.find(state => 
+            generateTermId(state.name) === stateSlug
+          );
+          
+          if (matchingState) {
+            const targetStateName = matchingState.name;
+            const stateId = generateTermId(targetStateName);
+            
+            // Always ensure the state is expanded before scrolling
+            setExpandedStates(prev => {
+              const needsExpansion = !prev.has(targetStateName);
+              if (needsExpansion) {
+                return new Set([...prev, targetStateName]);
+              }
+              return prev;
+            });
+            
+            // Wait for expansion to complete before scrolling
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                scrollToHash({
+                  hash: stateId,
+                  onElementFound: (element) => {
+                    // State section found and scrolled to
+                    if (import.meta.env.DEV) {
+                      console.log(`[HashChange] Successfully scrolled to state section: ${targetStateName}`);
+                    }
+                  },
+                });
+              });
+            });
+          } else {
+            // Fallback: try direct element lookup (for other hash targets)
+            scrollToHash({ hash });
+          }
         }
       }
     };
