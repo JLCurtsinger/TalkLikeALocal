@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
-import { MapPin, ChevronDown, ChevronRight, Globe } from 'lucide-react';
+import { ChevronDown, ChevronRight, Globe } from 'lucide-react';
 import { cultures } from '../data/cultures';
 import { SearchBar } from '../components/SearchBar';
 import { BackToTop } from '../components/BackToTop';
@@ -244,7 +244,7 @@ export default function CulturalTerms() {
           
           <div className="max-w-4xl mx-auto text-center relative z-10">
             <div className="flex justify-center mb-4 hero-animate">
-              <MapPin className="w-12 h-12 text-blue-500" />
+              <img src="/favicon.svg" alt="" className="w-12 h-12" aria-hidden="true" />
             </div>
             <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hero-animate-delay-1">
               Cultural Terms

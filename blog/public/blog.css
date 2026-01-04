@@ -23,9 +23,17 @@ body {
   background-color: white;
 }
 
-body.dark {
+html.dark body {
   color: var(--tlal-gray-100);
   background-color: var(--tlal-gray-900);
+}
+
+html.dark main h1:not(.page-header h1):not(.card h2) {
+  color: var(--tlal-gray-100);
+}
+
+html.dark main > p {
+  color: var(--tlal-gray-300);
 }
 
 .container { max-width: 960px; margin: 0 auto; padding: 1.5rem; }
@@ -84,24 +92,24 @@ body.dark {
   color: var(--tlal-gray-500);
 }
 
-body.dark .card {
+html.dark .card {
   background-color: var(--tlal-gray-800);
   border-color: var(--tlal-gray-700);
 }
 
-body.dark .card:hover {
+html.dark .card:hover {
   border-color: var(--tlal-purple-light);
 }
 
-body.dark .card h2 {
+html.dark .card h2 {
   color: var(--tlal-gray-100);
 }
 
-body.dark .card p {
+html.dark .card p {
   color: var(--tlal-gray-300);
 }
 
-body.dark .card .tag {
+html.dark .card .tag {
   color: var(--tlal-gray-400);
 }
 
@@ -118,7 +126,7 @@ body.dark .card .tag {
   letter-spacing: 0.05em;
 }
 
-body.dark .tag {
+html.dark .tag {
   background-color: var(--tlal-gray-700);
   color: var(--tlal-gray-300);
 }
@@ -158,15 +166,15 @@ body.dark .tag {
   color: var(--tlal-gray-500);
 }
 
-body.dark .page-header {
+html.dark .page-header {
   border-bottom-color: var(--tlal-gray-700);
 }
 
-body.dark .page-header h1 {
+html.dark .page-header h1 {
   color: var(--tlal-gray-100);
 }
 
-body.dark .page-header .meta {
+html.dark .page-header .meta {
   color: var(--tlal-gray-400);
 }
 
@@ -288,41 +296,41 @@ body.dark .page-header .meta {
 }
 
 /* Dark mode styles */
-body.dark .content {
+html.dark .content {
   color: var(--tlal-gray-200);
 }
 
-body.dark .content h1,
-body.dark .content h2,
-body.dark .content h3,
-body.dark .content h4 {
+html.dark .content h1,
+html.dark .content h2,
+html.dark .content h3,
+html.dark .content h4 {
   color: var(--tlal-gray-100);
 }
 
-body.dark .content a {
+html.dark .content a {
   color: var(--tlal-purple-light);
 }
 
-body.dark .content a:hover {
+html.dark .content a:hover {
   color: var(--tlal-purple);
 }
 
-body.dark .content blockquote {
+html.dark .content blockquote {
   border-left-color: var(--tlal-purple-light);
   background: var(--tlal-gray-800);
   color: var(--tlal-gray-300);
 }
 
-body.dark .content hr {
+html.dark .content hr {
   background: var(--tlal-gray-700);
 }
 
-body.dark .content code {
+html.dark .content code {
   background-color: var(--tlal-gray-800);
   color: var(--tlal-gray-200);
 }
 
-body.dark .content pre {
+html.dark .content pre {
   background-color: var(--tlal-gray-800);
   color: var(--tlal-gray-200);
 }
@@ -350,19 +358,19 @@ body.dark .content pre {
   color: var(--tlal-purple-hover);
 }
 
-body.dark .page-footer {
+html.dark .page-footer {
   border-top-color: var(--tlal-gray-700);
 }
 
-body.dark .page-footer p {
+html.dark .page-footer p {
   color: var(--tlal-gray-400);
 }
 
-body.dark .page-footer a {
+html.dark .page-footer a {
   color: var(--tlal-purple-light);
 }
 
-body.dark .page-footer a:hover {
+html.dark .page-footer a:hover {
   color: var(--tlal-purple);
 }
 
