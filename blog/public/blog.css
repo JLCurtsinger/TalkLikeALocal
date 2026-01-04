@@ -25,6 +25,20 @@ body {
   background-color: white;
 }
 
+/* Apply Literata font only to blog pages */
+.blog-scope {
+  font-family: "Literata", var(--font-sans, system-ui), serif;
+}
+
+.blog-scope h1,
+.blog-scope h2,
+.blog-scope h3,
+.blog-scope h4,
+.blog-scope h5,
+.blog-scope h6 {
+  font-family: inherit;
+}
+
 html.dark body {
   color: var(--tlal-gray-100);
   background-color: var(--tlal-gray-900);
