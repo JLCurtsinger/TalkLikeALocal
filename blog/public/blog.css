@@ -25,18 +25,122 @@ body {
   background-color: white;
 }
 
-/* Apply Literata font only to blog pages */
+/* Blog scope: Use Inter as default UI font, increase base size by ~5% */
 .blog-scope {
-  font-family: "Literata", var(--font-sans, system-ui), serif;
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif;
+  font-size: 105%; /* Increase blog content size by ~5% */
 }
 
-.blog-scope h1,
-.blog-scope h2,
-.blog-scope h3,
-.blog-scope h4,
-.blog-scope h5,
-.blog-scope h6 {
-  font-family: inherit;
+/* Apply Literata ONLY to blog reading content */
+/* Blog index page: main title and description */
+.blog-scope main > h1,
+.blog-scope main > p {
+  font-family: "Literata", serif;
+}
+
+/* Blog cards: titles and descriptions */
+.blog-scope .card h2,
+.blog-scope .card p {
+  font-family: "Literata", serif;
+}
+
+/* Blog article pages: article title */
+.blog-scope .page-header h1 {
+  font-family: "Literata", serif;
+}
+
+/* Blog article pages: article body content */
+.blog-scope .content,
+.blog-scope .post-content,
+.blog-scope article.post,
+.blog-scope .content p,
+.blog-scope .content h1,
+.blog-scope .content h2,
+.blog-scope .content h3,
+.blog-scope .content h4,
+.blog-scope .content h5,
+.blog-scope .content h6,
+.blog-scope .content ul,
+.blog-scope .content ol,
+.blog-scope .content li,
+.blog-scope .content blockquote,
+.blog-scope .content a,
+.blog-scope .post-content p,
+.blog-scope .post-content h1,
+.blog-scope .post-content h2,
+.blog-scope .post-content h3,
+.blog-scope .post-content h4,
+.blog-scope .post-content h5,
+.blog-scope .post-content h6,
+.blog-scope .post-content ul,
+.blog-scope .post-content ol,
+.blog-scope .post-content li,
+.blog-scope .post-content blockquote,
+.blog-scope article.post p,
+.blog-scope article.post h1,
+.blog-scope article.post h2,
+.blog-scope article.post h3,
+.blog-scope article.post h4,
+.blog-scope article.post h5,
+.blog-scope article.post h6,
+.blog-scope article.post ul,
+.blog-scope article.post ol,
+.blog-scope article.post li,
+.blog-scope article.post blockquote {
+  font-family: "Literata", serif;
+}
+
+/* Keep Inter for all UI and navigation elements */
+/* Navbar */
+.blog-scope nav,
+.blog-scope nav * {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+}
+
+/* Buttons */
+.blog-scope button,
+.blog-scope button * {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+}
+
+/* Tag pills/badges */
+.blog-scope .tag,
+.blog-scope .tag-wrapper,
+.blog-scope .tag-wrapper * {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+}
+
+/* Page header navigation links and metadata (e.g. "Back to Blogs", publication date) */
+.blog-scope .page-header a,
+.blog-scope .page-header .meta {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+}
+
+/* Footer */
+.blog-scope .page-footer,
+.blog-scope .page-footer *,
+.blog-scope footer,
+.blog-scope footer * {
+  font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji", sans-serif !important;
+}
+
+/* Keep main page titles (H1) at original size despite the 105% base increase */
+.blog-scope main > h1 {
+  font-size: calc(2em / 1.05); /* Counteract 105% base to maintain browser default H1 size (typically 2em) */
+}
+
+.blog-scope .page-header h1 {
+  font-size: calc(2.5rem / 1.05); /* Counteract 105% base to maintain 2.5rem */
+}
+
+@media (max-width: 768px) {
+  .blog-scope main > h1 {
+    font-size: calc(2em / 1.05); /* Maintain browser default */
+  }
+  
+  .blog-scope .page-header h1 {
+    font-size: calc(2rem / 1.05); /* Counteract 105% base to maintain 2rem */
+  }
 }
 
 html.dark body {
