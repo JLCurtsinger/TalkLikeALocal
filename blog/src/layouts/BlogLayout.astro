@@ -8,8 +8,9 @@ export interface Props {
   hero?: string
   canonical?: string
   tags?: string[]
+  image?: string
 }
-const { title, description, pubDate, hero, canonical } = Astro.props
+const { title, description, pubDate, hero, canonical, image } = Astro.props
 const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString()
 const structuredData = JSON.stringify({
   '@context': 'https://schema.org',
@@ -71,6 +72,18 @@ const structuredData = JSON.stringify({
           )
         }
       </header>
+      {image && (
+        <img
+          src={image}
+          alt={`${title} thumbnail`}
+          class="article-image"
+          loading="eager"
+          fetchpriority="high"
+          decoding="async"
+          width="800"
+          height="450"
+        />
+      )}
       <article class="post prose content post-content">
         <slot />
       </article>

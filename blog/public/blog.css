@@ -236,6 +236,17 @@ main > h1 {
   line-height: 1.5;
 }
 
+/* Card Image */
+.card-image {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  display: block;
+}
+
 .tags-container {
   display: flex;
   flex-wrap: wrap;
@@ -326,6 +337,18 @@ html.dark .page-header h1 {
 
 html.dark .page-header .meta {
   color: var(--tlal-gray-400);
+}
+
+/* Article Image */
+.article-image {
+  width: 100%;
+  max-width: 800px;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  margin: 2rem auto;
+  display: block;
 }
 
 /* Content Typography */
@@ -578,6 +601,10 @@ html.dark .page-footer a:hover {
   
   .card {
     padding: 1.25rem;
+  }
+  
+  .card-image {
+    margin: -1.25rem -1.25rem 1rem -1.25rem;
   }
   
   .tags-container {

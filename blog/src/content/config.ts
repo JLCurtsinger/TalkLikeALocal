@@ -11,6 +11,7 @@ export const posts = defineCollection({
     canonical: z.string().url().optional(),
     draft: z.boolean().optional().default(false),
     icon: z.string().optional(),
+    image: z.string().optional(),
   }),
 })
 
