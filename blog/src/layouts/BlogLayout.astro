@@ -1,17 +1,28 @@
 ---
-import Nav from '../components/Nav.astro';
+import Nav from '../components/Nav.astro'
 
 export interface Props {
-  title: string;
-  description?: string;
-  pubDate?: string | Date;
-  hero?: string;
-  canonical?: string;
-  tags?: string[];
+  title: string
+  description?: string
+  pubDate?: string | Date
+  hero?: string
+  canonical?: string
+  tags?: string[]
 }
-const { title, description, pubDate, hero, canonical } = Astro.props;
-const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
+const { title, description, pubDate, hero, canonical } = Astro.props
+const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString()
+const structuredData = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: pubDate,
+  image: hero ? [hero] : undefined,
+  mainEntityOfPage: pageUrl,
+  publisher: { '@type': 'Organization', name: 'Talk Like a Local' },
+})
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -29,30 +40,19 @@ const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
 
     <!-- Apply theme before paint to prevent flash -->
     <script is:inline>
-      (function() {
-        const savedTheme = localStorage.getItem('theme');
+      ;(function () {
+        const savedTheme = localStorage.getItem('theme')
         if (savedTheme === 'dark') {
-          document.documentElement.classList.add('dark');
+          document.documentElement.classList.add('dark')
         }
-      })();
+      })()
     </script>
 
     <!-- Import main site CSS -->
     <link rel="stylesheet" href="/styles.css" />
     <link rel="stylesheet" href="/blog/blog.css" />
 
-    <script type="application/ld+json">
-      {JSON.stringify({
-        "@context":"https://schema.org",
-        "@type":"BlogPosting",
-        headline: title,
-        description,
-        datePublished: pubDate,
-        image: hero ? [hero] : undefined,
-        mainEntityOfPage: pageUrl,
-        publisher: { "@type": "Organization", name: "Talk Like a Local" }
-      })}
-    </script>
+    <script type="application/ld+json" set:html={structuredData} />
   </head>
   <body>
     <Nav />
@@ -60,7 +60,11 @@ const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
       <header class="page-header">
         <a href="/blog" aria-label="Back to blog">← Back to Blogs</a>
         <h1>{title}</h1>
-        {pubDate && <p class="meta">Published: {new Date(pubDate).toDateString()}</p>}
+        {
+          pubDate && (
+            <p class="meta">Published: {new Date(pubDate).toDateString()}</p>
+          )
+        }
       </header>
       <article class="prose content post-content">
         <slot />
@@ -75,36 +79,54 @@ const pageUrl = canonical ?? new URL(Astro.url.pathname, Astro.site).toString();
       class="fixed bottom-8 right-16 p-3 bg-blue-500 text-white rounded-full shadow-lg transition-all duration-300 hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 z-50 opacity-0 translate-y-16 pointer-events-none"
       aria-label="Back to top"
     >
-      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19v-14M5 12l7-7 7 7" />
+      <svg
+        class="w-6 h-6"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        aria-hidden="true"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 19v-14M5 12l7-7 7 7"></path>
       </svg>
     </button>
     <script src="/blog/nav.js" type="module" defer></script>
     <script>
-      (function() {
-        const button = document.getElementById('back-to-top');
-        if (!button) return;
-        
+      ;(function () {
+        const button = document.getElementById('back-to-top')
+        if (!button) return
+
         const toggleVisibility = () => {
           if (window.pageYOffset > 300) {
-            button.classList.remove('opacity-0', 'translate-y-16', 'pointer-events-none');
-            button.classList.add('opacity-100', 'translate-y-0');
+            button.classList.remove(
+              'opacity-0',
+              'translate-y-16',
+              'pointer-events-none'
+            )
+            button.classList.add('opacity-100', 'translate-y-0')
           } else {
-            button.classList.remove('opacity-100', 'translate-y-0');
-            button.classList.add('opacity-0', 'translate-y-16', 'pointer-events-none');
+            button.classList.remove('opacity-100', 'translate-y-0')
+            button.classList.add(
+              'opacity-0',
+              'translate-y-16',
+              'pointer-events-none'
+            )
           }
-        };
-        
+        }
+
         const scrollToTop = () => {
           window.scrollTo({
             top: 0,
             behavior: 'smooth',
-          });
-        };
-        
-        window.addEventListener('scroll', toggleVisibility);
-        button.addEventListener('click', scrollToTop);
-      })();
+          })
+        }
+
+        window.addEventListener('scroll', toggleVisibility)
+        button.addEventListener('click', scrollToTop)
+      })()
     </script>
   </body>
 </html>
