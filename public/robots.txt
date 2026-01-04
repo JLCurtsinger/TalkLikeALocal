@@ -2,3 +2,4 @@ User-agent: *
 Allow: /
 
 Sitemap: https://talklikealocal.org/sitemap.xml
+Sitemap: https://talklikealocal.org/blog/sitemap-index.xml

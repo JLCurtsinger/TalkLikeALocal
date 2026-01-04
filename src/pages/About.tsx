@@ -106,6 +106,8 @@ export default function About() {
             <span>|</span>
             <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">About Us</Link>
             <span>|</span>
+            <a href="/blog" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">Blog</a>
+            <span>|</span>
             <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">Terms of Service</Link>
             <span>|</span>
             <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">Privacy Policy</Link>

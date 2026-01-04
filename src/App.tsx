@@ -443,18 +443,26 @@ export default function App() {
             </p>
             <AlphabetNav />
             <SearchBar onSearch={handleSearch} />
-            <Link 
-              to="/cultural-terms" 
-              onClick={() => {
-                window.scrollTo({
-                  top: 0,
-                  behavior: 'smooth'
-                });
-              }}
-              className="inline-flex items-center px-8 py-4 mt-6 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200 hero-animate-delay-3"
-            >
-              Cultural Terms
-            </Link>
+            <div className="flex flex-wrap gap-4 justify-center mt-6 hero-animate-delay-3">
+              <Link 
+                to="/cultural-terms" 
+                onClick={() => {
+                  window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                  });
+                }}
+                className="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200"
+              >
+                Cultural Terms
+              </Link>
+              <a 
+                href="/blog" 
+                className="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200"
+              >
+                Read Our Blog
+              </a>
+            </div>
           </div>
         </section>
 
@@ -482,6 +490,23 @@ export default function App() {
           </div>
         </section>
 
+        <section id="blog" className="max-w-7xl mx-auto px-4 py-16" aria-label="Blog">
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              From Our Blog
+            </h2>
+            <p className="text-gray-600 dark:text-gray-300 mb-6">
+              Explore pronunciation guides, cultural insights, and language preservation stories.
+            </p>
+            <a 
+              href="/blog" 
+              className="inline-flex items-center px-6 py-3 text-base font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200"
+            >
+              View All Blog Posts →
+            </a>
+          </div>
+        </section>
+
         <section id="suggestions" className="max-w-2xl mx-auto px-4 py-16" aria-label="Suggest a pronunciation">
           <div className="text-center mb-8">
             <h2 className="text-3xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
@@ -501,6 +526,8 @@ export default function App() {
             © {new Date().getFullYear()} Talk Like a Local. All rights reserved.
             <span>|</span>
             <Link to="/about" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">About Us</Link>
+            <span>|</span>
+            <a href="/blog" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">Blog</a>
             <span>|</span>
             <Link to="/impact" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">Our Impact</Link>
             <span>|</span>

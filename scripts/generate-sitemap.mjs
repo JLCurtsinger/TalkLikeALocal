@@ -70,13 +70,38 @@ const staticRoutes = [
   '/privacy',
   '/support',
   '/impact',
+  '/blog', // Blog index page
 ];
+
+// Discover blog posts from the blog directory
+async function discoverBlogPosts() {
+  try {
+    const blogPostsDir = path.resolve(projectRoot, 'blog/src/content/posts');
+    const entries = await fs.readdir(blogPostsDir, { withFileTypes: true });
+    const blogRoutes = [];
+    
+    for (const ent of entries) {
+      if (ent.isFile() && ent.name.endsWith('.mdx')) {
+        const slug = toSlug(ent.name);
+        blogRoutes.push(`/blog/${slug}`);
+      }
+    }
+    
+    return blogRoutes;
+  } catch (error) {
+    console.warn('[sitemap] Could not discover blog posts:', error.message);
+    return [];
+  }
+}
+
 let discovered = [];
 for (const src of SOURCES) {
   const routes = await listRoutes(src.dir, src.base);
   discovered = discovered.concat(routes);
 }
-const allRoutes = dedupe(staticRoutes.concat(discovered)).sort();
+
+const blogRoutes = await discoverBlogPosts();
+const allRoutes = dedupe(staticRoutes.concat(discovered).concat(blogRoutes)).sort();
 
 const siteCfg = JSON.parse(await fs.readFile(path.resolve(projectRoot, 'site.config.json'), 'utf-8'));
 
@@ -93,7 +118,15 @@ function xmlEscape(s) {
 
 const urls = allRoutes.map(r => {
   const loc = siteUrl ? siteUrl + r : r;
-  const priority = r === '/' ? '1.0' : '0.6';
+  // Set priorities: homepage highest, blog posts medium-high, other pages medium
+  let priority = '0.6';
+  if (r === '/') {
+    priority = '1.0';
+  } else if (r.startsWith('/blog/')) {
+    priority = '0.7';
+  } else if (r === '/blog') {
+    priority = '0.8';
+  }
   return `  <url><loc>${xmlEscape(loc)}</loc><lastmod>${now}</lastmod><changefreq>monthly</changefreq><priority>${priority}</priority></url>`;
 }).join('\n');
 

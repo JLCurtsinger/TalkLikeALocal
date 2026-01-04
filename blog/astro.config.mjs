@@ -3,7 +3,7 @@ import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site: 'https://yourdomain.com', // TODO: replace with real domain
+  site: 'https://talklikealocal.org',
   base: '/blog',
   integrations: [mdx(), sitemap()],
 });
