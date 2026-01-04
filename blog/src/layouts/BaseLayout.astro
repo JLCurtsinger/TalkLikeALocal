@@ -6,7 +6,7 @@ const description = "Pronunciations, culture, and preservation resources.";
 const canonical = new URL(Astro.url.pathname, Astro.site).toString();
 ---
 <!doctype html>
-<html lang="en" class="light">
+<html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>{title}</title>
@@ -16,6 +16,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site).toString();
     <link rel="canonical" href={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+
+    <!-- Apply theme before paint to prevent flash -->
+    <script is:inline>
+      (function() {
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark') {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
 
     <!-- Import main site CSS -->
     <link rel="stylesheet" href="/styles.css" />

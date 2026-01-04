@@ -456,12 +456,6 @@ export default function App() {
               >
                 Cultural Terms
               </Link>
-              <a 
-                href="/blog" 
-                className="inline-flex items-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200"
-              >
-                Read Our Blog
-              </a>
             </div>
           </div>
         </section>
