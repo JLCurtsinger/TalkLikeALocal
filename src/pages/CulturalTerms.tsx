@@ -377,75 +377,77 @@ function CultureSection({ culture, isExpanded, onToggle, searchTerm }: CultureSe
         isVisible={isExpanded && isInView}
       />
       
-      <div id={generateTermId(culture.name)} className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-                <button
-                  onClick={onToggle}
-                  className="w-full flex items-center justify-between text-left mb-2 group"
-                  aria-expanded={isExpanded}
-                  aria-controls={`content-${culture.name}`}
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-baseline gap-2">
-                        <h2 className="text-3xl font-bold dark:text-white inline-flex items-center flex-wrap">
-                          <span className="inline break-words">{culture.name}</span>
-                          {culture.websiteUrl && (
-                            <a
-                              href={culture.websiteUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 inline-flex items-center ml-2 whitespace-nowrap"
-                              onClick={(e) => e.stopPropagation()}
-                              aria-label={`Visit ${culture.name} official website`}
-                            >
-                              <Globe className="w-5 h-5 flex-shrink-0" />
-                            </a>
-                          )}
-                        </h2>
-                      </div>
-                      {culture.languageFamily && (
-                        <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
-                          {culture.languageFamily} Language Family
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                  <div className="text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors flex-shrink-0 ml-4">
-                    {isExpanded ? (
-                      <ChevronDown className="w-6 h-6" />
-                    ) : (
-                      <ChevronRight className="w-6 h-6" />
-                    )}
-                  </div>
-                </button>
-
-                <div
-                  id={`content-${culture.name}`}
-                  className={`grid gap-4 transition-all duration-300 ${isExpanded ? 'opacity-100 mt-4' : 'opacity-0 h-0 overflow-hidden'} bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mr-20`}
-                >
-                  {filteredTerms.map((term: any, index: number) => (
-                    <div 
-                      key={`${culture.name}-${term.word}-${index}`}
-                      id={generateTermCardId(term.word)}
-                      className="bg-gray-50 dark:bg-gray-700 rounded-lg p-6"
+      <section id={generateTermId(culture.name)} className={`py-4 pr-20 ${!isExpanded ? 'pb-2' : ''}`}>
+        <button
+          onClick={onToggle}
+          className="w-full flex items-center justify-between text-left mb-2 group"
+          aria-expanded={isExpanded}
+          aria-controls={`content-${culture.name}`}
+        >
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-baseline gap-2">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent inline-flex items-center flex-wrap">
+                  <span className="inline break-words">{culture.name}</span>
+                  {culture.websiteUrl && (
+                    <a
+                      href={culture.websiteUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-600 dark:text-blue-400 dark:hover:text-blue-300 inline-flex items-center ml-2 whitespace-nowrap"
+                      onClick={(e) => e.stopPropagation()}
+                      aria-label={`Visit ${culture.name} official website`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h3 className="text-xl font-semibold dark:text-white">{term.word}</h3>
-                          <p className="text-gray-600 dark:text-gray-300">{term.phonetic}</p>
-                          {term.description && (
-                            <p className="text-gray-500 dark:text-gray-400 mt-2">{term.description}</p>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-0">
-                          <ShareButton term={term} context="Cultural Terms" />
-                          <CopyLinkButton term={term} context="Cultural Terms" />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      <Globe className="w-5 h-5 flex-shrink-0" />
+                    </a>
+                  )}
+                </h2>
+              </div>
+              {culture.languageFamily && (
+                <p className="text-gray-600 dark:text-gray-400 text-sm mt-1">
+                  {culture.languageFamily} Language Family
+                </p>
+              )}
+            </div>
+          </div>
+          <div className="text-gray-400 group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-colors">
+            {isExpanded ? (
+              <ChevronDown className="w-6 h-6" />
+            ) : (
+              <ChevronRight className="w-6 h-6" />
+            )}
+          </div>
+        </button>
+
+        <div
+          id={`content-${culture.name}`}
+          className={`grid gap-4 transition-all duration-300 relative ${
+            isExpanded ? 'opacity-100 mt-4' : 'opacity-0 h-0 overflow-hidden'
+          }`}
+        >
+          {filteredTerms.map((term: any, index: number) => (
+            <div 
+              key={`${culture.name}-${term.word}-${index}`}
+              id={generateTermCardId(term.word)}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors scroll-mt-24 relative z-10"
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-xl font-semibold dark:text-white">{term.word}</h3>
+                  <p className="text-gray-600 dark:text-gray-300">{term.phonetic}</p>
+                  {term.description && (
+                    <p className="text-gray-500 dark:text-gray-400 mt-2">{term.description}</p>
+                  )}
+                </div>
+                <div className="flex items-center gap-0">
+                  <ShareButton term={term} context="Cultural Terms" />
+                  <CopyLinkButton term={term} context="Cultural Terms" />
                 </div>
               </div>
+            </div>
+          ))}
+        </div>
+      </section>
     </>
   );
 }
