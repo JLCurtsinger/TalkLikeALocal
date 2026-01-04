@@ -236,14 +236,23 @@ main > h1 {
   line-height: 1.5;
 }
 
+/* Card Image Wrapper */
+.card-image-wrapper {
+  margin: -1.5rem -1.5rem 1rem -1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
 /* Card Image */
 .card-image {
   width: 100%;
   height: auto;
   aspect-ratio: 16 / 9;
   object-fit: cover;
+  object-position: center;
   border-radius: 0.5rem;
-  margin: -1.5rem -1.5rem 1rem -1.5rem;
   display: block;
 }
 
@@ -603,7 +612,7 @@ html.dark .page-footer a:hover {
     padding: 1.25rem;
   }
   
-  .card-image {
+  .card-image-wrapper {
     margin: -1.25rem -1.25rem 1rem -1.25rem;
   }
   

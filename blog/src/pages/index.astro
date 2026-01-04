@@ -17,15 +17,17 @@ const posts = (await getCollection('posts'))
       posts.map((p) => (
         <a class="card" href={`/blog/${p.slug}/`}>
           {p.data.image && (
-            <img
-              src={p.data.image}
-              alt={`${p.data.title} thumbnail`}
-              class="card-image"
-              loading="lazy"
-              decoding="async"
-              width="800"
-              height="450"
-            />
+            <div class="card-image-wrapper">
+              <img
+                src={p.data.image}
+                alt={`${p.data.title} thumbnail`}
+                class="card-image"
+                loading="lazy"
+                decoding="async"
+                width="800"
+                height="450"
+              />
+            </div>
           )}
           <h2>{p.data.title}</h2>
           {p.data.description && <p>{p.data.description}</p>}
