@@ -195,19 +195,39 @@ html.dark .page-header .meta {
   padding-right: 1rem;
 }
 
-/* Narrow body text for blog posts while keeping headings full width */
+/* Blog post readability: headings full width, body text narrower (mobile-first) */
+.post-content.prose {
+  max-width: none; /* override Tailwind Typography default max-width */
+}
+
+.post-content.content {
+  max-width: none; /* override .content max-width for post pages */
+}
+
+/* Default mobile: full width so it doesn't feel cramped */
 .post-content :where(p, ul, ol, blockquote, pre, table) {
-  max-width: 60ch;
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
 
-.post-content :where(li) {
-  max-width: 60ch;
-}
-
+/* Keep headings full width (relative to the article/container) */
 .post-content :where(h1, h2, h3, h4) {
   max-width: none;
+}
+
+/* Tablet and up: narrow body text for readability */
+@media (min-width: 640px) {
+  .post-content :where(p, ul, ol, blockquote, pre, table) {
+    max-width: min(70ch, 85vw);
+  }
+}
+
+/* Desktop and up: consistent readable line length */
+@media (min-width: 1024px) {
+  .post-content :where(p, ul, ol, blockquote, pre, table) {
+    max-width: 70ch;
+  }
 }
 
 .content h1 { 
