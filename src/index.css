@@ -121,3 +121,42 @@ section[id] {
     box-shadow: 0 0 0 0 rgba(96, 165, 250, 0);
   }
 }
+
+/* Dark mode background color override - replace navy with neutral black */
+.dark .bg-gray-900 {
+  background-color: #141313 !important;
+}
+
+.dark .bg-gray-800 {
+  background-color: #141313 !important;
+}
+
+.dark .bg-black {
+  background-color: #141313 !important;
+}
+
+.dark .bg-gray-900\/90 {
+  background-color: rgba(20, 19, 19, 0.9) !important;
+}
+
+.dark .bg-gray-900\/80 {
+  background-color: rgba(20, 19, 19, 0.8) !important;
+}
+
+.dark .bg-gray-800\/90 {
+  background-color: rgba(20, 19, 19, 0.9) !important;
+}
+
+.dark .bg-gray-800\/30 {
+  background-color: rgba(20, 19, 19, 0.3) !important;
+}
+
+.dark .from-gray-900 {
+  --tw-gradient-from: #141313 !important;
+  --tw-gradient-to: rgba(20, 19, 19, 0) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+.dark .to-gray-800 {
+  --tw-gradient-to: #141313 !important;
+}
