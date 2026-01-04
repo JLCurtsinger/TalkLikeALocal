@@ -195,39 +195,23 @@ html.dark .page-header .meta {
   padding-right: 1rem;
 }
 
-/* Blog post readability: headings full width, body text narrower (mobile-first) */
-.post-content.prose {
-  max-width: none; /* override Tailwind Typography default max-width */
-}
-
-.post-content.content {
-  max-width: none; /* override .content max-width for post pages */
-}
-
-/* Default mobile: full width so it doesn't feel cramped */
-.post-content :where(p, ul, ol, blockquote, pre, table) {
-  max-width: 100%;
+/* Blog reading width: mobile-first, centered column */
+.post-content > :where(p, ul, ol, blockquote, pre, table, h2, h3, h4) {
+  width: min(60ch, 92vw);
   margin-left: auto;
   margin-right: auto;
 }
 
-/* Keep headings full width (relative to the article/container) */
-.post-content :where(h1, h2, h3, h4) {
-  max-width: none;
+/* Keep list indentation readable while still using the centered column */
+.post-content > :where(ul, ol) {
+  padding-left: 1.25rem;
 }
 
-/* Tablet and up: narrow body text for readability */
-@media (min-width: 640px) {
-  .post-content :where(p, ul, ol, blockquote, pre, table) {
-    max-width: min(70ch, 85vw);
-  }
-}
-
-/* Desktop and up: consistent readable line length */
-@media (min-width: 1024px) {
-  .post-content :where(p, ul, ol, blockquote, pre, table) {
-    max-width: 70ch;
-  }
+/* Optional: keep the main in-article H1 aligned too (fixes "too far left" if MDX contains an H1) */
+.post-content > h1 {
+  width: min(60ch, 92vw);
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .content h1 { 
@@ -450,4 +434,69 @@ html.dark .page-footer a:hover {
   .card {
     padding: 1.25rem;
   }
+}
+
+/* Blog post reading column (mobile-first) */
+article.post {
+width: 100%;
+}
+
+/* Constrain reading width for body elements on larger screens */
+article.post :where(p, ul, ol, blockquote, pre, table) {
+width: 100%;
+max-width: 68ch;
+margin-left: auto;
+margin-right: auto;
+}
+
+/* Keep headings aligned to the same centered column as body text */
+article.post :where(h1, h2, h3, h4, h5, h6) {
+width: 100%;
+max-width: 68ch;
+margin-left: auto;
+margin-right: auto;
+}
+
+/* Slightly wider main title is okay */
+article.post :where(h1) {
+max-width: 75ch;
+}
+
+/* Mobile: full width with padding, no max-width constraint */
+@media (max-width: 640px) {
+article.post {
+padding-left: 1rem;
+padding-right: 1rem;
+}
+
+article.post :where(p, ul, ol, blockquote, pre, table, h1, h2, h3, h4, h5, h6) {
+max-width: 100%;
+}
+}
+
+/* Typographic rhythm (safe, minimal) */
+article.post :where(p) {
+line-height: 1.75;
+}
+
+article.post :where(h2) {
+margin-top: 2.25rem;
+margin-bottom: 0.75rem;
+}
+
+article.post :where(h3) {
+margin-top: 1.75rem;
+margin-bottom: 0.5rem;
+}
+
+article.post :where(p + p) {
+margin-top: 1rem;
+}
+
+article.post :where(ul, ol) {
+padding-left: 1.25rem;
+}
+
+article.post :where(li) {
+margin-top: 0.5rem;
 }
