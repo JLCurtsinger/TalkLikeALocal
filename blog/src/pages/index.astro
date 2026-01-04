@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro'
 import { getCollection } from 'astro:content'
+import PostIcon from '../components/PostIcon.astro'
 const posts = (await getCollection('posts'))
   .filter((p) => !p.data.draft)
   .sort(
@@ -16,7 +17,10 @@ const posts = (await getCollection('posts'))
     {
       posts.map((p) => (
         <a class="card" href={`/blog/${p.slug}/`}>
-          <h2>{p.data.title}</h2>
+          <div class="card-header">
+            <PostIcon name={p.data.icon} class="card-icon" />
+            <h2>{p.data.title}</h2>
+          </div>
           {p.data.description && <p>{p.data.description}</p>}
           {p.data.tags && <p class="tag">{p.data.tags.join(' · ')}</p>}
         </a>

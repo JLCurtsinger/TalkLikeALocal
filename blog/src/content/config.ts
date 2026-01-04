@@ -10,6 +10,7 @@ export const posts = defineCollection({
     tags: z.array(z.string()).optional(),
     canonical: z.string().url().optional(),
     draft: z.boolean().optional().default(false),
+    icon: z.string().optional(),
   }),
 })
 
