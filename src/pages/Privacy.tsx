@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
+import { Footer } from '../components/Footer';
 import { MapPin } from 'lucide-react';
 import { Helmet } from 'react-helmet-async';
 
@@ -37,7 +38,7 @@ export default function Privacy() {
             </h1>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-8 space-y-6 transition-colors">
+          <div className="bg-blue-50/10 dark:bg-gray-900 rounded-lg shadow-md p-8 space-y-6 transition-colors">
             <section>
               <h2 className="text-2xl font-semibold mb-4 dark:text-white">1. Information Collection</h2>
               <p className="text-gray-600 dark:text-gray-300">
@@ -82,26 +83,7 @@ export default function Privacy() {
         </div>
       </main>
 
-      <footer className="bg-white dark:bg-gray-900 border-t dark:border-gray-800 py-8 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 text-center text-gray-600 dark:text-gray-400">
-          <p className="space-x-2">
-            © {new Date().getFullYear()} Talk Like a Local. All rights reserved.
-            <span>|</span>
-            <Link to="/terms" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">Terms of Service</Link>
-            <span>|</span>
-            <Link to="/privacy" className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline">Privacy Policy</Link>
-            <span>|</span>
-            <a 
-              href="https://elev8.dev" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-gray-900 dark:hover:text-gray-200 hover:underline"
-            >
-              Produced by elev8.dev
-            </a>
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
