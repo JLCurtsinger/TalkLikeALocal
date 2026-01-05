@@ -51,13 +51,23 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
 
   if (submitted) {
     return (
-      <div 
-        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
-      >
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full relative">
+      <>
+        <style>{`
+          /* Match SuggestionsForm styling for Dispute modal in dark mode */
+          .dispute-modal-container {
+            background-color: white;
+          }
+          .dark .dispute-modal-container {
+            background-color: rgba(20, 19, 19, 0.1) !important;
+          }
+        `}</style>
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
+        >
+          <div className="dispute-modal-container bg-white dark:bg-gray-800 rounded-lg p-8 max-w-md w-full relative">
           <button
             onClick={() => {
               setSubmitted(false);
@@ -79,17 +89,34 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
           </div>
         </div>
       </div>
+      </>
     );
   }
 
   return (
-    <div 
-      className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="modal-title"
-    >
-      <div className="bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[90vh] flex flex-col relative">
+    <>
+      <style>{`
+        /* Match SuggestionsForm styling for Dispute modal in dark mode */
+        .dispute-modal-container {
+          background-color: white;
+        }
+        .dark .dispute-modal-container {
+          background-color: rgba(20, 19, 19, 0.98) !important;
+        }
+        .dispute-form-input {
+          background-color: white;
+        }
+        .dark .dispute-form-input {
+          background-color: rgba(55, 65, 81, 0.25) !important;
+        }
+      `}</style>
+      <div 
+        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+      >
+        <div className="dispute-modal-container bg-white dark:bg-gray-800 rounded-lg w-full max-w-md max-h-[90vh] flex flex-col relative">
         {/* Header - Fixed at top */}
         <div className="p-6 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
           <h2 id="modal-title" className="text-2xl font-semibold dark:text-white">Dispute a Term</h2>
@@ -116,7 +143,7 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
                   setSelectedType(e.target.value);
                   setSelectedItem('');
                 }}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="dispute-form-input w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 required
               >
                 <option value="state">State</option>
@@ -132,7 +159,7 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
                 name={selectedType}
                 value={selectedItem}
                 onChange={(e) => setSelectedItem(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="dispute-form-input w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 required
               >
                 <option value="">Select {selectedType === 'state' ? 'a state' : 'a culture'}</option>
@@ -159,7 +186,7 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
                 type="text"
                 name="term"
                 required
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="dispute-form-input w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 placeholder="Enter the term"
               />
             </div>
@@ -172,7 +199,7 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
                 type="text"
                 name="current_pronunciation"
                 required
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="dispute-form-input w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 placeholder="How it's currently shown"
               />
             </div>
@@ -185,7 +212,7 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
                 type="text"
                 name="corrected_pronunciation"
                 required
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="dispute-form-input w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 placeholder="How it should be pronounced"
               />
             </div>
@@ -198,7 +225,7 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
                 name="description"
                 required
                 rows={3}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="dispute-form-input w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 placeholder="Please explain your reasoning and any relevant credentials or experience"
               />
             </div>
@@ -210,7 +237,7 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
               <input
                 type="email"
                 name="email"
-                className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="dispute-form-input w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-colors"
                 placeholder="Enter your email (optional)"
               />
             </div>
@@ -233,5 +260,6 @@ export function DisputeForm({ isOpen, onClose }: DisputeFormProps) {
         </div>
       </div>
     </div>
+    </>
   );
 }

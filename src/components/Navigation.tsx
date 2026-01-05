@@ -108,7 +108,7 @@ export function Navigation() {
 
         {/* Mobile menu - positioned below the navbar */}
         <div
-          className={`fixed right-0 top-16 w-64 bg-white dark:bg-gray-900 shadow-lg rounded-bl-lg transition-transform duration-200 z-40 ${
+          className={`fixed right-0 top-16 w-64 bg-white dark:bg-gray-800/90 backdrop-blur-sm shadow-lg rounded-bl-xl transition-transform duration-200 z-40 ${
             isMenuOpen ? 'translate-x-0' : 'translate-x-full'
           }`}
           onClick={e => e.stopPropagation()}

@@ -9,6 +9,7 @@ export function AlphabetNav() {
   const [activeLetters, setActiveLetters] = useState<string[]>([]);
   const [currentLetter, setCurrentLetter] = useState<string | null>(null);
   const [isVisible, setIsVisible] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
 
   useEffect(() => {
     // Get the items based on the current page
@@ -21,14 +22,32 @@ export function AlphabetNav() {
   }, [location]);
 
   useEffect(() => {
+    // Reset scroll tracking and current letter when location changes
+    setHasScrolled(false);
+    setCurrentLetter(null);
+  }, [location]);
+
+  useEffect(() => {
     const handleScroll = () => {
       setIsVisible(window.scrollY > 300);
+      
+      // Mark that user has scrolled (prevents initial load from setting active letter)
+      if (!hasScrolled && window.scrollY > 0) {
+        setHasScrolled(true);
+      }
+
+      // Only set currentLetter if user has actually scrolled
+      // This prevents "A" from being highlighted on initial page load
+      if (!hasScrolled) {
+        return;
+      }
 
       // Get the items based on the current page
       const isCulturalTerms = location.pathname === '/cultural-terms';
       const items = isCulturalTerms ? cultures : states;
       
       // Check each item's position
+      let foundActive = false;
       for (const item of items) {
         const element = document.getElementById(generateTermId(item.name));
         if (!element) continue;
@@ -37,13 +56,19 @@ export function AlphabetNav() {
         // Account for navbar height (64px) plus padding
         if (rect.top <= 80) {
           setCurrentLetter(item.name[0].toUpperCase());
+          foundActive = true;
         }
+      }
+      
+      // If no section is in view (scrolled past all), clear the active letter
+      if (!foundActive && window.scrollY > 0) {
+        setCurrentLetter(null);
       }
     };
 
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, [location]);
+  }, [location, hasScrolled]);
 
   const scrollToLetter = (letter: string) => {
     const isCulturalTerms = location.pathname === '/cultural-terms';
@@ -54,6 +79,11 @@ export function AlphabetNav() {
 
     const element = document.getElementById(generateTermId(item.name));
     if (!element) return;
+
+    // Mark that user has scrolled (enables scroll-based highlighting)
+    setHasScrolled(true);
+    // Set the clicked letter as active immediately
+    setCurrentLetter(letter);
 
     const navbarHeight = 64; // Height of the fixed navbar
     const padding = 16; // Additional padding
