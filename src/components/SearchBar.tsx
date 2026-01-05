@@ -31,7 +31,7 @@ export function SearchBar({ onSearch }: SearchBarProps) {
 
   return (
     <div className="relative max-w-2xl mx-auto mt-8">
-      <div className="relative bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-2xl shadow-lg p-2">
+      <div className="relative bg-white/60 dark:bg-gray-800/30 backdrop-blur-sm rounded-2xl shadow-lg p-2">
         <input
           type="text"
           value={searchTerm}

@@ -38,7 +38,7 @@ export default function Support() {
             </h1>
           </div>
 
-          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-8 space-y-6 transition-colors">
+          <div className="bg-white dark:bg-gray-900/10 rounded-lg shadow-md p-8 space-y-6 transition-colors">
             <section className="space-y-4">
               <p className="text-gray-600 dark:text-gray-300">
                 At <strong>TalkLikeaLocal.org</strong>, we're dedicated to providing a free, educational resource for travelers, language enthusiasts, and anyone curious about regional pronunciations across the U.S. This project is run by a one-man team, driven by a love for language and culture.
@@ -57,7 +57,7 @@ export default function Support() {
                   href="https://buy.stripe.com/9AQ5lu09K21Af1S7ss"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200"
+                  className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200"
                 >
                   Donate Now
                 </a>
@@ -65,7 +65,7 @@ export default function Support() {
                   href="https://talklikealocal.printful.me/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200"
+                  className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200"
                 >
                   Merchandise
                 </a>

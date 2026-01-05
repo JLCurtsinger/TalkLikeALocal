@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
 import { Footer } from '../components/Footer';
@@ -10,6 +10,12 @@ import { Helmet } from 'react-helmet-async';
 export default function Impact() {
   const navigate = useNavigate();
   const location = useLocation();
+  
+  const statsSectionRef = useRef<HTMLElement>(null);
+  const hasAnimatedRef = useRef(false);
+  const [displayTotal, setDisplayTotal] = useState(0);
+  const [displayStateTerms, setDisplayStateTerms] = useState(0);
+  const [displayCultureTerms, setDisplayCultureTerms] = useState(0);
 
   useEffect(() => {
     if (location.hash === '#our-impact') {
@@ -38,6 +44,100 @@ export default function Impact() {
   const totalStateTerms = states.reduce((total, state) => total + state.terms.length, 0);
   const totalCultureTerms = cultures.reduce((total, culture) => total + culture.terms.length, 0);
   const totalTerms = totalStateTerms + totalCultureTerms;
+
+  // Count-up animation function
+  useEffect(() => {
+    if (hasAnimatedRef.current) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      setDisplayTotal(totalTerms);
+      setDisplayStateTerms(totalStateTerms);
+      setDisplayCultureTerms(totalCultureTerms);
+      hasAnimatedRef.current = true;
+      return;
+    }
+
+    const animateCount = (
+      start: number,
+      end: number,
+      duration: number,
+      callback: (value: number) => void
+    ) => {
+      const startTime = performance.now();
+      
+      const update = (currentTime: number) => {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Ease-out function
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const current = Math.floor(start + (end - start) * easeOut);
+        
+        callback(current);
+        
+        if (progress < 1) {
+          requestAnimationFrame(update);
+        } else {
+          callback(end);
+        }
+      };
+      
+      requestAnimationFrame(update);
+    };
+
+    const startAnimation = () => {
+      if (hasAnimatedRef.current) return;
+      hasAnimatedRef.current = true;
+      const duration = 1000; // 1000ms
+      animateCount(0, totalTerms, duration, setDisplayTotal);
+      animateCount(0, totalStateTerms, duration, setDisplayStateTerms);
+      animateCount(0, totalCultureTerms, duration, setDisplayCultureTerms);
+    };
+
+    // Use IntersectionObserver if available
+    if ('IntersectionObserver' in window) {
+      // Wait for ref to be attached
+      const setupObserver = () => {
+        if (statsSectionRef.current) {
+          const observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                  startAnimation();
+                  observer.disconnect();
+                }
+              });
+            },
+            { threshold: 0.1 }
+          );
+          
+          observer.observe(statsSectionRef.current);
+          
+          return () => {
+            observer.disconnect();
+          };
+        }
+        return null;
+      };
+
+      // Try immediately, then retry after a short delay if ref not ready
+      let cleanup = setupObserver();
+      if (!cleanup) {
+        const timeoutId = setTimeout(() => {
+          cleanup = setupObserver();
+        }, 100);
+        return () => {
+          clearTimeout(timeoutId);
+          if (cleanup) cleanup();
+        };
+      }
+      return cleanup;
+    } else {
+      // Fallback: start immediately
+      startAnimation();
+    }
+  }, [totalTerms, totalStateTerms, totalCultureTerms]);
 
   const handleSuggestClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -118,7 +218,7 @@ export default function Impact() {
             </p>
           </div>
 
-          <div id="our-impact" className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-8 space-y-8 transition-colors">
+          <div id="our-impact" className="bg-white dark:bg-gray-900/10 rounded-lg shadow-md p-8 space-y-8 transition-colors">
             <section>
               <h2 className="text-2xl font-semibold mb-4 dark:text-white">Our Mission in Action</h2>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
@@ -138,10 +238,28 @@ export default function Impact() {
               </button>
             </section>
 
-            <section className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-8">
+            <section ref={statsSectionRef} className="impact-stats-section rounded-lg p-8">
+              <style>{`
+                .impact-stats-section {
+                  background: transparent;
+                }
+                .impact-stats-card {
+                  background-color: rgba(255, 255, 255, 0.6);
+                }
+                .dark .impact-stats-card {
+                  background-color: rgba(31, 41, 55, 0.5);
+                }
+                .impact-stat-number {
+                  background: linear-gradient(to right, #2563eb, #9333ea);
+                  -webkit-background-clip: text;
+                  background-clip: text;
+                  -webkit-text-fill-color: transparent;
+                  color: transparent;
+                }
+              `}</style>
               <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                  {totalTerms.toLocaleString()}
+                <h2 className="text-3xl font-bold impact-stat-number mb-2">
+                  {displayTotal.toLocaleString()}
                 </h2>
                 <p className="text-xl text-gray-600 dark:text-gray-300">
                   Total Terms Documented
@@ -149,9 +267,9 @@ export default function Impact() {
               </div>
               
               <div className="grid md:grid-cols-2 gap-6">
-                <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
-                  <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                    {totalStateTerms.toLocaleString()}
+                <div className="text-center p-4 impact-stats-card rounded-lg">
+                  <h3 className="text-2xl font-bold impact-stat-number mb-2">
+                    {displayStateTerms.toLocaleString()}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     Local Terms
@@ -161,9 +279,9 @@ export default function Impact() {
                   </p>
                 </div>
                 
-                <div className="text-center p-4 bg-white dark:bg-gray-800 rounded-lg">
-                  <h3 className="text-2xl font-bold text-blue-600 dark:text-blue-400 mb-2">
-                    {totalCultureTerms.toLocaleString()}
+                <div className="text-center p-4 impact-stats-card rounded-lg">
+                  <h3 className="text-2xl font-bold impact-stat-number mb-2">
+                    {displayCultureTerms.toLocaleString()}
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300">
                     Cultural Terms
@@ -197,7 +315,7 @@ export default function Impact() {
               <div className="flex justify-center">
                 <button
                   onClick={handleSuggestClick}
-                  className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-600 transition-colors duration-200"
+                  className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200"
                 >
                   Suggest a Term
                 </button>

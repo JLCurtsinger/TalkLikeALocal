@@ -77,7 +77,9 @@ export function NestedAlphabetNav({ terms, sectionName, isVisible }: NestedAlpha
               className={`
                 w-5 h-5 sm:w-6 sm:h-6 flex items-center justify-center rounded-l-md
                 font-semibold text-xs transition-all duration-200
-                hover:bg-gradient-to-r hover:from-purple-500 hover:to-blue-500 hover:text-white hover:shadow-md
+                hover:bg-gradient-to-r hover:from-purple-500/20 hover:to-blue-500/20
+                dark:hover:bg-gradient-to-r dark:hover:from-purple-500 dark:hover:to-blue-500 dark:hover:text-white
+                hover:shadow-md
                 ${isCurrent 
                   ? 'bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-md scale-105' 
                   : 'bg-white/90 dark:bg-gray-600/90 bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent'}

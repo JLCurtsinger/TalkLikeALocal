@@ -38,7 +38,7 @@ export default function About() {
             </h1>
           </div>
 
-          <div className="bg-blue-50/10 dark:bg-gray-900 rounded-lg shadow-md p-8 space-y-6 transition-colors">
+          <div className="bg-blue-50/5 dark:bg-gray-900/10 rounded-lg shadow-md p-8 space-y-6 transition-colors">
             <section>
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 <strong>Welcome to TalkLikeaLocal.org!</strong>

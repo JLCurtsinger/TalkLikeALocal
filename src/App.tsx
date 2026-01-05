@@ -529,8 +529,8 @@ export default function App() {
               Learn to Talk Like a Local Across the U.S.!
             </h1>
             <p className={`text-xl sm:text-2xl mb-6 max-w-3xl mx-auto leading-relaxed ${theme === 'dark' ? 'text-gray-300' : 'text-gray-600'} hero-animate-delay-2`}>
-              Discover how locals pronounce places and phrases in each state. 
-              Click a letter below to explore pronunciations from Alabama to Wyoming.
+              Discover how locals say things in each state. 
+              Click a letter below to explore terms from Alabama to Wyoming.
             </p>
             <AlphabetNav />
             <SearchBar onSearch={handleSearch} />

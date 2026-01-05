@@ -68,6 +68,31 @@ export function AlphabetNav() {
 
   return (
     <>
+      <style>{`
+        /* Fix light mode hover: maintain gradient text color, prevent white text */
+        .alphabet-nav-button:not(.alphabet-nav-current) {
+          position: relative;
+        }
+        /* Light mode: maintain gradient text on hover - override any white text */
+        :not(.dark) .alphabet-nav-button:not(.alphabet-nav-current):hover {
+          background-image: linear-gradient(to right, rgb(37 99 235), rgb(147 51 234)) !important;
+          -webkit-background-clip: text !important;
+          background-clip: text !important;
+          color: transparent !important;
+          -webkit-text-fill-color: transparent !important;
+          background-color: transparent !important;
+        }
+        /* Use pseudo-element for the hover background square in light mode */
+        :not(.dark) .alphabet-nav-button:not(.alphabet-nav-current):hover::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(to right, rgb(37 99 235 / 0.2), rgb(147 51 234 / 0.2));
+          border-radius: inherit;
+          z-index: -1;
+          box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+      `}</style>
       {/* Horizontal nav at the top */}
       <nav 
         className="bg-white/60 dark:bg-gray-800/30 backdrop-blur-sm rounded-2xl shadow-lg p-4 sm:p-6 mx-auto max-w-3xl"
@@ -81,10 +106,12 @@ export function AlphabetNav() {
               <button
                 key={letter}
                 onClick={() => scrollToLetter(letter)}
-                className={`
+                className={`alphabet-nav-button ${isCurrent ? 'alphabet-nav-current' : ''}
                   w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg
                   font-semibold text-base sm:text-lg transition-all duration-200
-                  hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:shadow-md
+                  hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-purple-600/20
+                  dark:hover:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white
+                  hover:shadow-md
                   ${isCurrent 
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md scale-110' 
                     : 'bg-white/80 dark:bg-gray-700/50 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'}
@@ -115,10 +142,12 @@ export function AlphabetNav() {
               <button
                 key={letter}
                 onClick={() => scrollToLetter(letter)}
-                className={`
+                className={`alphabet-nav-button ${isCurrent ? 'alphabet-nav-current' : ''}
                   w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-l-md
                   font-semibold text-xs sm:text-sm transition-all duration-200
-                  hover:bg-gradient-to-r hover:from-blue-600 hover:to-purple-600 hover:text-white hover:shadow-md
+                  hover:bg-gradient-to-r hover:from-blue-600/20 hover:to-purple-600/20
+                  dark:hover:bg-gradient-to-r dark:hover:from-blue-600 dark:hover:to-purple-600 dark:hover:text-white
+                  hover:shadow-md
                   ${isCurrent 
                     ? 'bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-md' 
                     : 'bg-white/80 dark:bg-gray-700/50 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent'}

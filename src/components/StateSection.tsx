@@ -81,7 +81,7 @@ export function StateSection({ state, isExpanded, onToggle, filteredTerms }: Sta
           <div 
             key={`${state.name}-${term.word}-${index}`} 
             id={generateTermCardId(term.word)}
-            className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors scroll-mt-24 relative z-10"
+            className="bg-white/15 dark:bg-gray-800/15 rounded-lg shadow-md p-6 transition-colors scroll-mt-24 relative z-10"
           >
             <div className="flex items-center justify-between">
               <div>

@@ -263,7 +263,7 @@ export default function CulturalTerms() {
                   behavior: 'smooth'
                 });
               }}
-              className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200 mb-8 hero-animate-delay-3"
+              className="inline-flex items-center px-6 py-3 text-lg font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg shadow-md hover:opacity-90 transition-opacity duration-200 mt-4 mb-8 hero-animate-delay-3"
             >
               Local Terms
             </Link>
@@ -405,7 +405,7 @@ function CultureSection({ culture, isExpanded, onToggle, searchTerm }: CultureSe
             <div 
               key={`${culture.name}-${term.word}-${index}`}
               id={generateTermCardId(term.word)}
-              className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 transition-colors scroll-mt-24 relative z-10"
+              className="bg-white/15 dark:bg-gray-800/15 rounded-lg shadow-md p-6 transition-colors scroll-mt-24 relative z-10"
             >
               <div className="flex items-center justify-between">
                 <div>
