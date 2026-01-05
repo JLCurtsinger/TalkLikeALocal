@@ -252,6 +252,8 @@ export default function CulturalTerms() {
             <p className="text-xl text-gray-600 dark:text-gray-300 mb-12 max-w-2xl mx-auto hero-animate-delay-2">
               Exploring cultural heritage and preserving the beauty of language through education and understanding.
             </p>
+            <AlphabetNav />
+            <SearchBar onSearch={handleSearch} />
             <Link 
               to="/" 
               onClick={() => {
@@ -264,8 +266,6 @@ export default function CulturalTerms() {
             >
               Local Terms
             </Link>
-            <AlphabetNav />
-            <SearchBar onSearch={handleSearch} />
           </div>
         </section>
 
