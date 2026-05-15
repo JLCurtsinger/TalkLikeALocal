@@ -175,6 +175,12 @@ export const california: State = {
       description: 'A county and river in northern California.'
     },
     {
+      word: 'Upas Street',
+      phonetic: 'YOO-pass street',
+      // audioUrl: '/audio/upas-street.mp3',
+      description: 'A street running along the north side of Balboa Park in San Diego, pronounced "YOO-pass," not "OO-pahs."'
+    },
+    {
       word: 'Vallejo',
       phonetic: 'vuh-LAY-oh',
       // audioUrl: '/audio/vallejo.mp3',
