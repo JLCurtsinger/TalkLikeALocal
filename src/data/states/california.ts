@@ -104,6 +104,12 @@ export const california: State = {
       description: 'A small city in Ventura County.'
     },
     {
+      word: 'Otay Mesa',
+      phonetic: 'OH-tie MAY-suh',
+      // audioUrl: '/audio/otay-mesa.mp3',
+      description: 'An area in southern San Diego near the U.S.–Mexico border, pronounced "OH-tie," not "oh-TAY."'
+    },
+    {
       word: 'Paso Robles',
       phonetic: 'PASS-oh ROH-buhlz',
       // audioUrl: '/audio/paso_robles.mp3',
