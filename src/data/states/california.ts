@@ -39,6 +39,12 @@ export const california: State = {
       description: 'A street in San Francisco.'
     },
     {
+      word: 'Jacumba',
+      phonetic: 'yah-KUM-buh',
+      // audioUrl: '/audio/jacumba.mp3',
+      description: 'A small desert community in eastern San Diego County."'
+    },
+    {
       word: 'Jamacha',
       phonetic: 'Hah-mah-shaw',
       // audioUrl: '/audio/napa.mp3',
