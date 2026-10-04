@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Navigation } from '../components/Navigation';
 import { Footer } from '../components/Footer';
@@ -17,17 +17,9 @@ import { useTheme } from '../contexts/ThemeContext';
 import { scrollToHash } from '../utils/hashScroll';
 import { buildCultureTermIndex } from '../utils/buildTermIndex';
 
-/** Pending hash scroll: expand culture first, then scroll once laid out */
-interface PendingHashScroll {
-  elementId: string;
-  sectionName: string;
-  highlight?: boolean;
-}
-
 export default function CulturalTerms() {
   const location = useLocation();
   const [expandedCultures, setExpandedCultures] = useState<Set<string>>(new Set());
-  const [pendingHashScroll, setPendingHashScroll] = useState<PendingHashScroll | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const { theme } = useTheme();
   const [isMobile, setIsMobile] = useState(false);
@@ -52,98 +44,104 @@ export default function CulturalTerms() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  /**
-   * Stage 1: resolve hash → expand the owning culture → queue pending scroll target.
-   */
-  const queueHashNavigation = useCallback((rawHash: string) => {
-    const hash = rawHash.startsWith('#') ? rawHash.slice(1) : rawHash;
-    if (!hash) {
-      setPendingHashScroll(null);
-      return;
-    }
-
-    if (hash.startsWith('term-')) {
-      const termId = hash;
-      const termLocation = termIndex.get(termId);
-
-      if (!termLocation) {
-        // Unknown term hash — fail gracefully
-        setPendingHashScroll(null);
-        return;
-      }
-
-      setExpandedCultures((prev) => {
-        if (prev.has(termLocation.cultureName)) return prev;
-        return new Set([...prev, termLocation.cultureName]);
-      });
-      setPendingHashScroll({
-        elementId: termId,
-        sectionName: termLocation.cultureName,
-        highlight: true,
-      });
-      return;
-    }
-
-    // Non-term hashes — scroll when laid out
-    setPendingHashScroll({
-      elementId: hash,
-      sectionName: '',
-      highlight: false,
-    });
-  }, [termIndex]);
-
-  // Stage 1 trigger: React Router location hash
   useEffect(() => {
+    // Hash navigation must override any saved letter/scroll state
+    // If hash exists, handle it first and skip other scroll logic
     if (location.hash) {
-      queueHashNavigation(location.hash);
-    } else {
-      setPendingHashScroll(null);
+      const hash = location.hash.slice(1);
+      
+      // Check if hash is a term ID (starts with "term-")
+      if (hash.startsWith('term-')) {
+        const termId = hash;
+        
+        // O(1) lookup in term index
+        const termLocation = termIndex.get(termId);
+        
+        if (termLocation) {
+          // Expand the culture FIRST, then scroll (expansion triggers re-render)
+          setExpandedCultures(prev => new Set([...prev, termLocation.cultureName]));
+          
+          // Wait for expansion to complete before scrolling
+          // Use requestAnimationFrame to ensure DOM has updated
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              // Use reliable hash scrolling with retry logic
+              scrollToHash({
+                hash: termId,
+                onElementFound: (element) => {
+                  // Dev-only check: verify ID match
+                  if (process.env.NODE_ENV === 'development') {
+                    const expectedId = termId;
+                    const actualId = element.id;
+                    if (expectedId !== actualId) {
+                      console.warn(`[Hash Scroll] ID mismatch! Expected: ${expectedId}, Actual: ${actualId}`);
+                    } else {
+                      console.log(`[Hash Scroll] Successfully found element with ID: ${actualId}`);
+                    }
+                  }
+                  
+                  // Apply highlight class
+                  element.classList.add('highlighted-term');
+                  // Remove highlight after 2 seconds
+                  setTimeout(() => {
+                    element.classList.remove('highlighted-term');
+                  }, 2000);
+                },
+              });
+            });
+          });
+        }
+        // If term not found, fail gracefully (do nothing)
+      } else {
+        // Handle non-term hashes
+        scrollToHash({ hash });
+      }
+      // Early return - hash navigation takes precedence
+      return;
     }
-  }, [location, queueHashNavigation]);
+  }, [location, termIndex]);
 
-  // Stage 1 trigger: native hashchange
+  // Handle hashchange events (when hash changes without page navigation)
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash) {
-        queueHashNavigation(window.location.hash);
-      } else {
-        setPendingHashScroll(null);
+        const hash = window.location.hash.slice(1);
+        
+        if (hash.startsWith('term-')) {
+          const termId = hash;
+          
+          // O(1) lookup in term index
+          const termLocation = termIndex.get(termId);
+          
+          if (termLocation) {
+            // Expand FIRST, then scroll
+            setExpandedCultures(prev => new Set([...prev, termLocation.cultureName]));
+            
+            // Wait for expansion to complete
+            requestAnimationFrame(() => {
+              requestAnimationFrame(() => {
+                scrollToHash({
+                  hash: termId,
+                  onElementFound: (element) => {
+                    element.classList.add('highlighted-term');
+                    setTimeout(() => {
+                      element.classList.remove('highlighted-term');
+                    }, 2000);
+                  },
+                });
+              });
+            });
+          }
+          // If term not found, fail gracefully (do nothing)
+        } else {
+          scrollToHash({ hash });
+        }
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [queueHashNavigation]);
-
-  // Stage 2: scroll only after the owning culture is expanded (and target has layout)
-  useEffect(() => {
-    if (!pendingHashScroll) return;
-
-    const { elementId, sectionName, highlight } = pendingHashScroll;
-
-    if (sectionName && !expandedCultures.has(sectionName)) {
-      return;
-    }
-
-    const cancel = scrollToHash({
-      hash: elementId,
-      requireLayout: true,
-      onElementFound: (element) => {
-        if (highlight) {
-          element.classList.add('highlighted-term');
-          setTimeout(() => {
-            element.classList.remove('highlighted-term');
-          }, 2000);
-        }
-        setPendingHashScroll(null);
-      },
-      onGiveUp: () => {
-        setPendingHashScroll(null);
-      },
-    });
-
-    return cancel;
-  }, [pendingHashScroll, expandedCultures]);
+  }, [termIndex]);
 
   const toggleCulture = (cultureName: string) => {
     setExpandedCultures(prev => {
