@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { StateSection } from './components/StateSection';
 import { BackToTop } from './components/BackToTop';
 import { AlphabetNav } from './components/AlphabetNav';
@@ -16,9 +16,17 @@ import { useTheme } from './contexts/ThemeContext';
 import { scrollToHash } from './utils/hashScroll';
 import { buildStateTermIndex } from './utils/buildTermIndex';
 
+/** Pending hash scroll: expand section first, then scroll once laid out */
+interface PendingHashScroll {
+  elementId: string;
+  sectionName: string;
+  highlight?: boolean;
+}
+
 export default function App() {
   const location = useLocation();
   const [expandedStates, setExpandedStates] = useState<Set<string>>(new Set());
+  const [pendingHashScroll, setPendingHashScroll] = useState<PendingHashScroll | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredTermsMap, setFilteredTermsMap] = useState<Map<string, Term[]>>(new Map());
   const { theme } = useTheme();
@@ -55,200 +63,128 @@ export default function App() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    // Hash navigation must override any saved letter/scroll state
-    // If hash exists, handle it first and skip other scroll logic
-    if (location.hash) {
-      const hash = location.hash.slice(1);
-      
-      // Check if hash is a term ID (starts with "term-")
-      if (hash.startsWith('term-')) {
-        const termId = hash;
-        
-        // DEV-only logging for term-agave debugging
-        if (import.meta.env.DEV && termId === 'term-agave') {
-          console.log('[Hash Navigation] Processing term-agave');
-          console.log('[Hash Navigation] Target ID:', termId);
-        }
-        
-        // O(1) lookup in term index (now returns array)
-        const termLocations = termIndex.get(termId);
-        
-        let selectedLocation: { stateName: string; letter: string } | null = null;
-        
-        if (termLocations && termLocations.length > 0) {
-          // If multiple states have this term, prefer the one matching current route
-          // For now, since we don't have state-specific routes, just use the first one
-          // (stable deterministic choice)
-          selectedLocation = termLocations[0];
-          
-          if (import.meta.env.DEV && termId === 'term-agave') {
-            console.log('[Hash Navigation] Found locations:', termLocations);
-            console.log('[Hash Navigation] Selected location:', selectedLocation);
-          }
-        } else {
-          // Index lookup failed - try DOM lookup as fallback
-          const element = document.getElementById(termId);
-          if (element) {
-            // Find which state section contains this element
-            const stateSection = element.closest('section[id]');
-            if (stateSection) {
-              const stateId = stateSection.id;
-              const stateName = states.find(state => 
-                generateTermId(state.name) === stateId
-              )?.name;
-              
-              if (stateName) {
-                selectedLocation = {
-                  stateName,
-                  letter: termId.replace('term-', '')[0]?.toUpperCase() || '',
-                };
-                
-                if (import.meta.env.DEV && termId === 'term-agave') {
-                  console.log('[Hash Navigation] Fallback: Found via DOM lookup');
-                  console.log('[Hash Navigation] Fallback location:', selectedLocation);
-                }
-              }
-            }
-          }
-          
-          if (import.meta.env.DEV && termId === 'term-agave') {
-            const elementAfterFallback = document.getElementById(termId);
-            console.log('[Hash Navigation] Element exists after fallback:', !!elementAfterFallback);
-          }
-        }
-        
-        if (selectedLocation) {
-          const targetStateName = selectedLocation.stateName;
-          
-          // Always ensure the state is expanded before scrolling
-          // Check if state is not expanded, and expand if needed
-          const needsExpansion = !expandedStates.has(targetStateName);
-          
-          if (needsExpansion) {
-            setExpandedStates(prev => new Set([...prev, targetStateName]));
-          }
-          
-          // Wait for expansion to complete before scrolling (if expansion was needed)
-          // Use requestAnimationFrame to ensure DOM has updated
-          const scrollDelay = needsExpansion ? 2 : 1; // Extra frame if we expanded
-          let frameCount = 0;
-          const doScroll = () => {
-            frameCount++;
-            if (frameCount < scrollDelay) {
-              requestAnimationFrame(doScroll);
-              return;
-            }
-            
-            // Use reliable hash scrolling with retry logic
-            scrollToHash({
-              hash: termId,
-              onElementFound: (element) => {
-                // Dev-only check: verify ID match
-                if (import.meta.env.DEV) {
-                  const expectedId = termId;
-                  const actualId = element.id;
-                  if (expectedId !== actualId) {
-                    console.warn(`[Hash Scroll] ID mismatch! Expected: ${expectedId}, Actual: ${actualId}`);
-                  } else {
-                    console.log(`[Hash Scroll] Successfully found element with ID: ${actualId}`);
-                  }
-                  
-                  if (termId === 'term-agave') {
-                    console.log('[Hash Scroll] term-agave element found:', element);
-                    console.log('[Hash Scroll] Element parent section:', element.closest('section[id]')?.id);
-                  }
-                }
-                
-                // Apply highlight class
-                element.classList.add('highlighted-term');
-                // Remove highlight after 2 seconds
-                setTimeout(() => {
-                  element.classList.remove('highlighted-term');
-                }, 2000);
-              },
-            });
-          };
-          
-          requestAnimationFrame(doScroll);
-        }
-        // If term not found, fail gracefully (do nothing)
+  /**
+   * Stage 1: resolve hash → expand the owning section → queue pending scroll target.
+   * Does not scroll yet; scrolling waits until the section is expanded and laid out.
+   */
+  const queueHashNavigation = useCallback((rawHash: string) => {
+    const hash = rawHash.startsWith('#') ? rawHash.slice(1) : rawHash;
+    if (!hash) {
+      setPendingHashScroll(null);
+      return;
+    }
+
+    if (hash.startsWith('term-')) {
+      const termId = hash;
+      const termLocations = termIndex.get(termId);
+
+      let selectedLocation: { stateName: string; letter: string } | null = null;
+
+      if (termLocations && termLocations.length > 0) {
+        // Stable deterministic choice when a term exists in multiple states
+        selectedLocation = termLocations[0];
       } else {
-        // Handle non-term hashes (like state sections)
-        // Support both formats: #massachusetts and #states/massachusetts (for backward compatibility)
-        let stateSlug = hash;
-        if (hash.startsWith('states/')) {
-          stateSlug = hash.replace('states/', '');
-        }
-        
-        // Find the matching state by comparing slug to generateTermId(state.name)
-        const matchingState = states.find(state => 
-          generateTermId(state.name) === stateSlug
-        );
-        
-        if (matchingState) {
-          const targetStateName = matchingState.name;
-          const stateId = generateTermId(targetStateName);
-          
-          // Always ensure the state is expanded before scrolling
-          const needsExpansion = !expandedStates.has(targetStateName);
-          
-          if (needsExpansion) {
-            setExpandedStates(prev => new Set([...prev, targetStateName]));
-          }
-          
-          // Wait for expansion to complete before scrolling (if expansion was needed)
-          const scrollDelay = needsExpansion ? 2 : 1;
-          let frameCount = 0;
-          const doScroll = () => {
-            frameCount++;
-            if (frameCount < scrollDelay) {
-              requestAnimationFrame(doScroll);
-              return;
-            }
-            
-            // Scroll to the state section by its ID
-            scrollToHash({
-              hash: stateId,
-              onElementFound: (element) => {
-                // State section found and scrolled to
-                if (import.meta.env.DEV) {
-                  console.log(`[Hash Scroll] Successfully scrolled to state section: ${targetStateName}`);
-                }
-              },
-            });
-          };
-          
-          requestAnimationFrame(doScroll);
-        } else {
-          // Fallback: try direct element lookup (for other hash targets)
-          const element = document.getElementById(hash);
-          if (element) {
-            const stateSection = element.closest('section');
-            if (stateSection) {
-              const stateName = states.find(state => 
-                generateTermId(state.name) === stateSection.id
-              )?.name;
-              if (stateName) {
-                setExpandedStates(prev => new Set([...prev, stateName]));
-                // Wait for expansion before scrolling
-                requestAnimationFrame(() => {
-                  requestAnimationFrame(() => {
-                    scrollToHash({ hash });
-                  });
-                });
-              } else {
-                scrollToHash({ hash });
-              }
-            } else {
-              scrollToHash({ hash });
+        // Index miss — try DOM fallback (e.g. already-rendered expanded content)
+        const element = document.getElementById(termId);
+        if (element) {
+          const stateSection = element.closest('section[id]');
+          if (stateSection) {
+            const stateName = states.find(
+              (state) => generateTermId(state.name) === stateSection.id
+            )?.name;
+            if (stateName) {
+              selectedLocation = {
+                stateName,
+                letter: termId.replace('term-', '')[0]?.toUpperCase() || '',
+              };
             }
           }
         }
       }
-      // Early return - hash navigation takes precedence
+
+      if (!selectedLocation) {
+        // Unknown term hash — fail gracefully, do not retry forever
+        setPendingHashScroll(null);
+        return;
+      }
+
+      const targetStateName = selectedLocation.stateName;
+      setExpandedStates((prev) => {
+        if (prev.has(targetStateName)) return prev;
+        return new Set([...prev, targetStateName]);
+      });
+      setPendingHashScroll({
+        elementId: termId,
+        sectionName: targetStateName,
+        highlight: true,
+      });
       return;
     }
+
+    // Non-term hashes (state sections): #massachusetts or #states/massachusetts
+    let stateSlug = hash;
+    if (hash.startsWith('states/')) {
+      stateSlug = hash.replace('states/', '');
+    }
+
+    const matchingState = states.find(
+      (state) => generateTermId(state.name) === stateSlug
+    );
+
+    if (matchingState) {
+      const targetStateName = matchingState.name;
+      const stateId = generateTermId(targetStateName);
+      setExpandedStates((prev) => {
+        if (prev.has(targetStateName)) return prev;
+        return new Set([...prev, targetStateName]);
+      });
+      setPendingHashScroll({
+        elementId: stateId,
+        sectionName: targetStateName,
+        highlight: false,
+      });
+      return;
+    }
+
+    // Other hash targets (e.g. #suggestions) — scroll without requiring a section expand
+    const element = document.getElementById(hash);
+    if (element) {
+      const stateSection = element.closest('section[id]');
+      const stateName = stateSection
+        ? states.find((state) => generateTermId(state.name) === stateSection.id)?.name
+        : undefined;
+
+      if (stateName) {
+        setExpandedStates((prev) => {
+          if (prev.has(stateName)) return prev;
+          return new Set([...prev, stateName]);
+        });
+        setPendingHashScroll({
+          elementId: hash,
+          sectionName: stateName,
+          highlight: false,
+        });
+      } else {
+        // No accordion ownership — scroll when laid out
+        setPendingHashScroll({
+          elementId: hash,
+          sectionName: '',
+          highlight: false,
+        });
+      }
+    } else {
+      setPendingHashScroll(null);
+    }
+  }, [termIndex]);
+
+  // Stage 1 trigger: React Router location hash (cold load + in-app navigation)
+  useEffect(() => {
+    if (location.hash) {
+      queueHashNavigation(location.hash);
+      return;
+    }
+
+    setPendingHashScroll(null);
 
     // Only run other scroll logic if no hash is present
     if (location.state?.scrollToSuggestions) {
@@ -267,135 +203,52 @@ export default function App() {
         }
       }, 100);
     }
-  }, [location, termIndex]);
+  }, [location, queueHashNavigation]);
 
-  // Handle hashchange events (when hash changes without page navigation)
+  // Stage 1 trigger: native hashchange (covers hash updates that still need handling)
   useEffect(() => {
     const handleHashChange = () => {
       if (window.location.hash) {
-        const hash = window.location.hash.slice(1);
-        
-        if (hash.startsWith('term-')) {
-          const termId = hash;
-          
-          // DEV-only logging for term-agave debugging
-          if (import.meta.env.DEV && termId === 'term-agave') {
-            console.log('[HashChange] Processing term-agave');
-          }
-          
-          // O(1) lookup in term index (now returns array)
-          const termLocations = termIndex.get(termId);
-          
-          let selectedLocation: { stateName: string; letter: string } | null = null;
-          
-          if (termLocations && termLocations.length > 0) {
-            // If multiple states have this term, prefer the first one (stable deterministic choice)
-            selectedLocation = termLocations[0];
-          } else {
-            // Index lookup failed - try DOM lookup as fallback
-            const element = document.getElementById(termId);
-            if (element) {
-              // Find which state section contains this element
-              const stateSection = element.closest('section[id]');
-              if (stateSection) {
-                const stateId = stateSection.id;
-                const stateName = states.find(state => 
-                  generateTermId(state.name) === stateId
-                )?.name;
-                
-                if (stateName) {
-                  selectedLocation = {
-                    stateName,
-                    letter: termId.replace('term-', '')[0]?.toUpperCase() || '',
-                  };
-                }
-              }
-            }
-          }
-          
-          if (selectedLocation) {
-            const targetStateName = selectedLocation.stateName;
-            
-            // Always ensure the state is expanded before scrolling
-            // Check if state is not expanded, and expand if needed
-            // Note: We need to check expandedStates from the closure, but since this is in a useEffect,
-            // we'll use a functional update to check current state
-            setExpandedStates(prev => {
-              const needsExpansion = !prev.has(targetStateName);
-              if (needsExpansion) {
-                return new Set([...prev, targetStateName]);
-              }
-              return prev;
-            });
-            
-            // Wait for expansion to complete before scrolling
-            // Use requestAnimationFrame to ensure DOM has updated
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                scrollToHash({
-                  hash: termId,
-                  onElementFound: (element) => {
-                    element.classList.add('highlighted-term');
-                    setTimeout(() => {
-                      element.classList.remove('highlighted-term');
-                    }, 2000);
-                  },
-                });
-              });
-            });
-          }
-          // If term not found, fail gracefully (do nothing)
-        } else {
-          // Handle non-term hashes (like state sections)
-          // Support both formats: #massachusetts and #states/massachusetts (for backward compatibility)
-          let stateSlug = hash;
-          if (hash.startsWith('states/')) {
-            stateSlug = hash.replace('states/', '');
-          }
-          
-          // Find the matching state by comparing slug to generateTermId(state.name)
-          const matchingState = states.find(state => 
-            generateTermId(state.name) === stateSlug
-          );
-          
-          if (matchingState) {
-            const targetStateName = matchingState.name;
-            const stateId = generateTermId(targetStateName);
-            
-            // Always ensure the state is expanded before scrolling
-            setExpandedStates(prev => {
-              const needsExpansion = !prev.has(targetStateName);
-              if (needsExpansion) {
-                return new Set([...prev, targetStateName]);
-              }
-              return prev;
-            });
-            
-            // Wait for expansion to complete before scrolling
-            requestAnimationFrame(() => {
-              requestAnimationFrame(() => {
-                scrollToHash({
-                  hash: stateId,
-                  onElementFound: (element) => {
-                    // State section found and scrolled to
-                    if (import.meta.env.DEV) {
-                      console.log(`[HashChange] Successfully scrolled to state section: ${targetStateName}`);
-                    }
-                  },
-                });
-              });
-            });
-          } else {
-            // Fallback: try direct element lookup (for other hash targets)
-            scrollToHash({ hash });
-          }
-        }
+        queueHashNavigation(window.location.hash);
+      } else {
+        setPendingHashScroll(null);
       }
     };
 
     window.addEventListener('hashchange', handleHashChange);
     return () => window.removeEventListener('hashchange', handleHashChange);
-  }, [termIndex]);
+  }, [queueHashNavigation]);
+
+  // Stage 2: scroll only after the owning section is expanded (and target has layout)
+  useEffect(() => {
+    if (!pendingHashScroll) return;
+
+    const { elementId, sectionName, highlight } = pendingHashScroll;
+
+    // Wait until the accordion section is expanded (empty sectionName = no accordion gate)
+    if (sectionName && !expandedStates.has(sectionName)) {
+      return;
+    }
+
+    const cancel = scrollToHash({
+      hash: elementId,
+      requireLayout: true,
+      onElementFound: (element) => {
+        if (highlight) {
+          element.classList.add('highlighted-term');
+          setTimeout(() => {
+            element.classList.remove('highlighted-term');
+          }, 2000);
+        }
+        setPendingHashScroll(null);
+      },
+      onGiveUp: () => {
+        setPendingHashScroll(null);
+      },
+    });
+
+    return cancel;
+  }, [pendingHashScroll, expandedStates]);
 
   useEffect(() => {
     // Google Analytics

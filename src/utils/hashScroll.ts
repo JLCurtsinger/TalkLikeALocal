@@ -1,6 +1,8 @@
 /**
  * Reliable hash-anchor scrolling utility
- * Handles URL decoding, element finding with retries, and smooth scrolling
+ * Handles URL decoding, element finding with retries, and smooth scrolling.
+ * Waits for a usable layout box before scrolling (collapsed accordion content
+ * can exist in the DOM with zero height).
  */
 
 interface ScrollToHashOptions {
@@ -9,11 +11,23 @@ interface ScrollToHashOptions {
   padding?: number;
   maxRetries?: number;
   retryInterval?: number;
+  /** When true (default), wait until the element has non-zero layout dimensions */
+  requireLayout?: boolean;
   onElementFound?: (element: HTMLElement) => void;
+  onGiveUp?: () => void;
 }
 
 /**
- * Scrolls to an element identified by hash, with retry logic for async-rendered content
+ * Returns true when the element has a usable layout box (not collapsed/clipped to 0).
+ */
+export function isElementLaidOut(element: HTMLElement): boolean {
+  const rect = element.getBoundingClientRect();
+  return rect.width > 0 && rect.height > 0;
+}
+
+/**
+ * Scrolls to an element identified by hash, with retry logic for async-rendered content.
+ * Returns a cancel function to stop retries (e.g. on unmount or new navigation).
  */
 export function scrollToHash({
   hash,
@@ -21,66 +35,90 @@ export function scrollToHash({
   padding = 24,
   maxRetries = 60, // 60 * 50ms = 3 seconds max
   retryInterval = 50,
+  requireLayout = true,
   onElementFound,
-}: ScrollToHashOptions): void {
-  if (!hash) return;
+  onGiveUp,
+}: ScrollToHashOptions): () => void {
+  if (!hash) return () => {};
 
   // Decode the hash (handle URL encoding)
   const decodedHash = decodeURIComponent(hash);
   const elementId = decodedHash.startsWith('#') ? decodedHash.slice(1) : decodedHash;
 
-  if (!elementId) return;
+  if (!elementId) return () => {};
 
-  // Try to find element immediately
-  let element = document.getElementById(elementId);
-  
-  if (element) {
-    scrollToElement(element, navbarHeight, padding);
-    onElementFound?.(element);
-    return;
-  }
-
-  // Element not found - reset scroll to top before retries to prevent staying at restored position
-  window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
-
-  // Element not found - use MutationObserver + interval retry
+  let cancelled = false;
   let retryCount = 0;
-  let found = false;
   let intervalId: ReturnType<typeof setInterval> | null = null;
   let observer: MutationObserver | null = null;
 
-  const attemptScroll = () => {
-    if (found) return;
-    
-    element = document.getElementById(elementId);
-    if (element) {
-      found = true;
-      if (observer) observer.disconnect();
-      if (intervalId) clearInterval(intervalId);
-      scrollToElement(element, navbarHeight, padding);
-      onElementFound?.(element);
-    } else {
-      retryCount++;
-      if (retryCount >= maxRetries) {
-        if (observer) observer.disconnect();
-        if (intervalId) clearInterval(intervalId);
-      }
+  const cleanup = () => {
+    if (observer) {
+      observer.disconnect();
+      observer = null;
+    }
+    if (intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
     }
   };
 
-  // Use MutationObserver to detect when element appears
+  const cancel = () => {
+    cancelled = true;
+    cleanup();
+  };
+
+  const tryScroll = (): boolean => {
+    if (cancelled) return true;
+
+    const element = document.getElementById(elementId);
+    if (!element) return false;
+
+    if (requireLayout && !isElementLaidOut(element)) {
+      return false;
+    }
+
+    cleanup();
+    scrollToElement(element, navbarHeight, padding);
+    onElementFound?.(element);
+    return true;
+  };
+
+  // Immediate attempt — only succeeds if element exists and (optionally) is laid out
+  if (tryScroll()) {
+    return cancel;
+  }
+
+  // Not ready yet — retry without resetting scroll position
+  const attemptScroll = () => {
+    if (cancelled) return;
+
+    if (tryScroll()) {
+      return;
+    }
+
+    retryCount++;
+    if (retryCount >= maxRetries) {
+      cleanup();
+      onGiveUp?.();
+    }
+  };
+
   observer = new MutationObserver(attemptScroll);
   observer.observe(document.body, {
     childList: true,
     subtree: true,
+    attributes: true,
+    attributeFilter: ['class', 'style'],
   });
 
-  // Fallback interval retry
   intervalId = setInterval(attemptScroll, retryInterval);
+
+  return cancel;
 }
 
 /**
- * Scrolls an element into view with proper offset
+ * Scrolls an element into view with proper offset for the fixed navbar
  */
 function scrollToElement(
   element: HTMLElement,
@@ -91,7 +129,7 @@ function scrollToElement(
   const offsetPosition = elementPosition + window.pageYOffset - navbarHeight - padding;
 
   window.scrollTo({
-    top: offsetPosition,
+    top: Math.max(0, offsetPosition),
     behavior: 'smooth',
   });
 }
@@ -103,15 +141,11 @@ function scrollToElement(
 export function handleHashScroll(
   hash: string | null,
   options?: Omit<ScrollToHashOptions, 'hash'>
-): void {
-  if (!hash) return;
+): () => void {
+  if (!hash) return () => {};
 
-  // Small delay to ensure DOM is ready
-  requestAnimationFrame(() => {
-    scrollToHash({
-      hash,
-      ...options,
-    });
+  return scrollToHash({
+    hash,
+    ...options,
   });
 }
-
