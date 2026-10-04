@@ -114,6 +114,12 @@ export const arizona: State = {
       description: 'An indigenous tribe from what is now northeast AZ.'
     },
     {
+      word: 'Houghton',
+      phonetic: 'HOW-tin',
+      // audioUrl: '/audio/houghton.mp3',
+      description: 'A street in Tucson, pronounced "HOW-tin," not "HOUGH-ton."'
+    },
+    {
       word: 'Hualapai',
       phonetic: 'WAH-luh-pie',
       // audioUrl: '/audio/prescott.mp3',
